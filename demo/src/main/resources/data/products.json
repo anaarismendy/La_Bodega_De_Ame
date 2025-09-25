@@ -1,0 +1,135 @@
+[
+    {
+        "id": 1,
+        "name": "Vino Tinto Premium",
+        "price": 45.00,
+        "originalPrice": null,
+        "image": "https://media.istockphoto.com/id/615269202/es/foto/verter-vino-en-copa.jpg?s=612x612&w=0&k=20&c=W6p0fYcOp9---RxmE9vBFBgHha-fJrSchd9O9PZY3OA=",
+        "hasDiscount": false,
+        "rating": 5,
+        "buttonText": "Add to cart",
+        "description": "Un exquisito vino tinto premium con cuerpo completo, notas de frutas rojas y taninos suaves. Perfecto para acompañar carnes rojas y quesos maduros.",
+        "category": "Vinos",
+        "stock": 15,
+        "details": {
+            "origin": "Mendoza, Argentina",
+            "vintage": "2020",
+            "alcoholContent": "14.5%",
+            "volume": "750ml"
+        }
+    },
+    {
+        "id": 2,
+        "name": "Whisky Escocés",
+        "price": 85.00,
+        "originalPrice": 120.00,
+        "image": "https://images.unsplash.com/photo-1569529465841-dfecdab7503b?w=450&h=300&fit=crop",
+        "hasDiscount": true,
+        "rating": 5,
+        "buttonText": "Add to cart",
+        "description": "Whisky escocés single malt de 12 años, destilado en las Highlands. Sabor suave con notas de miel, vainilla y un toque ahumado.",
+        "category": "Whiskies",
+        "stock": 3,
+        "details": {
+            "origin": "Escocia",
+            "age": "12 años",
+            "alcoholContent": "40%",
+            "volume": "700ml"
+        }
+    },
+    {
+        "id": 3,
+        "name": "Cerveza Artesanal Pack",
+        "price": 25.00,
+        "originalPrice": 35.00,
+        "image": "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=450&h=300&fit=crop",
+        "hasDiscount": true,
+        "rating": 4,
+        "buttonText": "Add to cart",
+        "description": "Pack de 6 cervezas artesanales de diferentes estilos: IPA, Stout, y Wheat Beer. Elaboradas con ingredientes naturales y de alta calidad.",
+        "category": "Cervezas",
+        "stock": 20,
+        "details": {
+            "origin": "Local",
+            "quantity": "6 unidades",
+            "alcoholContent": "4.5-6.2%",
+            "volume": "355ml c/u"
+        }
+    },
+    {
+        "id": 4,
+        "name": "Ron Caribeño",
+        "price": 60.00,
+        "originalPrice": null,
+        "image": "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=450&h=300&fit=crop",
+        "hasDiscount": false,
+        "rating": 5,
+        "buttonText": "Add to cart",
+        "description": "Ron dorado envejecido en barricas de roble durante 8 años. Sabor tropical con notas de caramelo, especias y un final largo y suave.",
+        "category": "Rones",
+        "stock": 8,
+        "details": {
+            "origin": "República Dominicana",
+            "age": "8 años",
+            "alcoholContent": "38%",
+            "volume": "750ml"
+        }
+    },
+    {
+        "id": 5,
+        "name": "Vodka Premium",
+        "price": 40.00,
+        "originalPrice": 55.00,
+        "image": "https://images.unsplash.com/photo-1551538827-9c037cb4f32a?w=450&h=300&fit=crop",
+        "hasDiscount": true,
+        "rating": 4,
+        "buttonText": "Add to cart",
+        "description": "Vodka premium destilado cinco veces y filtrado con carbón activado. Pureza cristalina con un sabor excepcionalmente suave.",
+        "category": "Vodkas",
+        "stock": 18,
+        "details": {
+            "origin": "Polonia",
+            "distillation": "5 veces",
+            "alcoholContent": "40%",
+            "volume": "750ml"
+        }
+    },
+    {
+        "id": 6,
+        "name": "Champagne Francés",
+        "price": 150.00,
+        "originalPrice": null,
+        "image": "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=450&h=300&fit=crop",
+        "hasDiscount": false,
+        "rating": 5,
+        "buttonText": "Add to cart",
+        "description": "Champagne tradicional francés de la región de Champagne. Burbujas finas y persistentes con notas de frutas blancas y brioche.",
+        "category": "Espumantes",
+        "stock": 5,
+        "details": {
+            "origin": "Champagne, Francia",
+            "vintage": "2018",
+            "alcoholContent": "12%",
+            "volume": "750ml"
+        }
+    },
+    {
+        "id": 7,
+        "name": "Tequila Artesanal",
+        "price": 75.00,
+        "originalPrice": 95.00,
+        "image": "https://images.unsplash.com/photo-1698288547419-407ca6bafe2a?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8dGVxdWlsYSUyMGJvdHRsZXxlbnwwfHwwfHx8MA%3D%3D",
+        "hasDiscount": true,
+        "rating": 5,
+        "buttonText": "Add to cart",
+        "description": "Tequila 100% agave azul, destilado artesanalmente en alambiques de cobre. Sabor puro con notas herbales y un toque cítrico.",
+        "category": "Tequilas",
+        "stock": 15,
+        "details": {
+            "origin": "Jalisco, México",
+            "agave": "100% Azul",
+            "alcoholContent": "38%",
+            "volume": "750ml"
+        }
+    }
+]

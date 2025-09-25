@@ -1,0 +1,220 @@
+/* Estilos personalizados para el carrusel de licores */
+.hero-carousel {
+    height: 500px;
+    overflow: hidden;
+    margin-top: 0;
+    position: relative;
+}
+
+.hero-carousel .owl-item {
+    height: 500px;
+}
+
+.hero-carousel .owl-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center 10%;
+    background-color: #f8f9fa;
+    /* Para botellas completas sin cortar - imagen más arriba */
+}
+
+.hero-carousel .owl-nav {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    transform: translateY(-50%);
+    z-index: 10;
+}
+
+.hero-carousel .owl-nav button {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.5) !important;
+    color: white !important;
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    font-size: 20px;
+    transition: all 0.3s ease;
+}
+
+.hero-carousel .owl-nav button:hover {
+    background: rgba(0, 0, 0, 0.8) !important;
+}
+
+.hero-carousel .owl-nav .owl-prev {
+    left: 20px;
+}
+
+.hero-carousel .owl-nav .owl-next {
+    right: 20px;
+}
+
+.hero-carousel .owl-dots {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+}
+
+.hero-carousel .owl-dots .owl-dot {
+    display: inline-block;
+    margin: 0 5px;
+}
+
+.hero-carousel .owl-dots .owl-dot span {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    transition: all 0.3s ease;
+}
+
+.hero-carousel .owl-dots .owl-dot.active span {
+    background: white;
+    transform: scale(1.2);
+}
+
+/* Overlay para el texto sobre las imágenes */
+.carousel-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.1));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+}
+
+.carousel-content {
+    text-align: center;
+    color: white;
+    z-index: 6;
+}
+
+.carousel-content h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.carousel-content p {
+    font-size: 1.2rem;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+/* Clases alternativas para diferentes tipos de imágenes */
+.hero-carousel.contain-images .owl-item img {
+    object-fit: contain;
+    background-color: #f8f9fa;
+}
+
+.hero-carousel.cover-images .owl-item img {
+    object-fit: cover;
+    object-position: center 30%;
+    background-color: transparent;
+}
+
+.hero-carousel.fill-images .owl-item img {
+    object-fit: fill;
+}
+
+/* Ajustes para diferentes posiciones verticales */
+.hero-carousel .owl-item img.position-very-top {
+    object-position: center 10%;
+}
+
+.hero-carousel .owl-item img.position-top {
+    object-position: center 20%;
+}
+
+.hero-carousel .owl-item img.position-center {
+    object-position: center 50%;
+}
+
+.hero-carousel .owl-item img.position-bottom {
+    object-position: center 80%;
+}
+
+.hero-carousel .owl-item img.position-lower {
+    object-position: center 90%;
+}
+
+/* Ajustes para imágenes verticales */
+.hero-carousel .owl-item img.vertical-image {
+    object-position: center top;
+}
+
+/* Ajustes para imágenes horizontales */
+.hero-carousel .owl-item img.horizontal-image {
+    object-position: center center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-carousel {
+        height: 350px;
+    }
+    
+    .hero-carousel .owl-item {
+        height: 350px;
+    }
+    
+    .carousel-content h1 {
+        font-size: 2rem;
+    }
+    
+    .carousel-content p {
+        font-size: 1rem;
+    }
+    
+    .hero-carousel .owl-nav button {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    
+    .hero-carousel .owl-nav .owl-prev {
+        left: 10px;
+    }
+    
+    .hero-carousel .owl-nav .owl-next {
+        right: 10px;
+    }
+}
+
+/* Para pantallas muy grandes */
+@media (min-width: 1400px) {
+    .hero-carousel {
+        height: 500px;
+    }
+    
+    .hero-carousel .owl-item {
+        height: 500px;
+    }
+    
+    .carousel-content h1 {
+        font-size: 3.5rem;
+    }
+    
+    .carousel-content p {
+        font-size: 1.4rem;
+    }
+}
+
+/* Scroll suave para toda la página */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Estilo para la sección del producto */
+#product-section {
+    scroll-margin-top: 20px;
+}
