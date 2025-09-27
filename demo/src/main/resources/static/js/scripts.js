@@ -1,349 +1,168 @@
-﻿
+﻿/*!
+ * Versión adaptada para Thymeleaf (sin API REST)
+ * Maneja únicamente carrito e interacciones.
+ */
 
-/*!
-* Start Bootstrap - Shop Homepage v5.0.6 (https://startbootstrap.com/template/shop-homepage)
-* Copyright 2013-2023 Start Bootstrap
-* Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-shop-homepage/blob/master/LICENSE)
-*/
-
-// Variable global para almacenar productos
+// Variable global para almacenar productos renderizados por Thymeleaf
 let products = [];
 
 // Variable global para el contador del carrito
 let cartItemCount = 0;
 
-// FunciÃ³n para cargar productos desde JSON
-async function loadProducts() {
-    try {
-        const response = await fetch('/api/productos', {
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
+// Función para inicializar productos desde el DOM (renderizados por Thymeleaf)
+function initializeProducts() {
+  const productElements = document.querySelectorAll("[data-product]");
+  products = [];
 
-        if (!response.ok) {
-            throw new Error('Error al cargar productos: ' + response.status);
-        }
-
-        const data = await response.json();
-
-        if (!Array.isArray(data)) {
-            throw new Error('La API no devolvió un arreglo de productos');
-        }
-
-        products = data.map(normalizeProduct).filter(Boolean);
-
-        if (products.length === 0) {
-            throw new Error('No se recibieron productos válidos desde la API');
-        }
-
-        return products;
-    } catch (error) {
-        console.error('Error cargando productos desde la API:', error);
-        return await loadFallbackProducts();
-    }
-}
-
-async function loadFallbackProducts() {
-    try {
-        const response = await fetch('data/products.json');
-        if (response.ok) {
-            const data = await response.json();
-            const normalized = Array.isArray(data) ? data.map(normalizeProduct).filter(Boolean) : [];
-            if (normalized.length > 0) {
-                products = normalized;
-                return products;
-            }
-        }
-    } catch (fallbackError) {
-        console.error('Error cargando productos locales:', fallbackError);
-    }
-
-    const defaultProducts = [
-        {
-            id: 1,
-            name: "Vino Tinto Premium",
-            price: 45.0,
-            originalPrice: null,
-            image: "https://images.unsplash.com/photo-1586370434639-0fe43b2d32d6?w=450&h=300&fit=crop",
-            hasDiscount: false,
-            rating: 5,
-            buttonText: "Agregar al carrito",
-            description: "Un exquisito vino tinto premium con cuerpo completo.",
-            category: "Vinos",
-            stock: 15,
-            details: {}
-        }
-    ];
-
-    products = defaultProducts.map(normalizeProduct).filter(Boolean);
-    return products;
-}
-
-function normalizeProduct(raw) {
-    if (!raw) {
-        return null;
-    }
-
-    const details = parseDetails(raw.details ?? raw.detalles);
-    const name = raw.name ?? raw.nombre ?? "Producto sin nombre";
-
-    const priceValue = raw.price ?? raw.precio ?? 0;
-    const price = typeof priceValue === "number" ? priceValue : parseFloat(priceValue) || 0;
-
-    const originalValue = raw.originalPrice ?? raw.precioOriginal ?? null;
-    const originalPrice = typeof originalValue === "number" || originalValue === null
-        ? originalValue
-        : parseFloat(originalValue) || null;
-
-    const stockValue = raw.stock ?? raw.cantidad ?? 0;
-    const stock = typeof stockValue === "number" ? stockValue : parseInt(stockValue, 10) || 0;
-
-    const hasDiscount = raw.hasDiscount ?? (originalPrice !== null && originalPrice > price);
-
-    const image = raw.image ?? raw.imagenUrl ?? "https://via.placeholder.com/450x300?text=Producto";
-    const rating = raw.rating ?? raw.calificacion ?? 5;
-
-    const buttonText = typeof raw.buttonText === "string" && raw.buttonText.trim().length > 0
-        ? raw.buttonText
-        : (stock > 0 ? "Agregar al carrito" : "Sin stock");
-
-    const description = raw.description ?? raw.descripcion ?? "Descripción no disponible.";
-    const category = raw.category ?? raw.categoria ?? "General";
-
-    return {
-        id: raw.id ?? Math.floor(Math.random() * 1000000),
-        name,
-        price,
-        originalPrice,
-        image,
-        hasDiscount,
-        rating,
-        buttonText,
-        description,
-        category,
-        stock,
-        details
+  productElements.forEach((el) => {
+    const product = {
+      id: parseInt(el.dataset.id),
+      name: el.dataset.name,
+      price: parseFloat(el.dataset.price),
+      originalPrice: el.dataset.originalPrice
+        ? parseFloat(el.dataset.originalPrice)
+        : null,
+      image: el.dataset.image,
+      hasDiscount: el.dataset.hasDiscount === "true",
+      rating: parseInt(el.dataset.rating),
+      stock: parseInt(el.dataset.stock),
+      description: el.dataset.description || "",
+      category: el.dataset.category || "General",
     };
+    products.push(product);
+  });
 }
 
-function parseDetails(value) {
-    if (!value) {
-        return {};
-    }
-
-    if (typeof value === "object") {
-        return value;
-    }
-
-    if (typeof value === "string") {
-        try {
-            return JSON.parse(value);
-        } catch (error) {
-            console.warn('No se pudo parsear el campo detalles:', error);
-        }
-    }
-
-    return {};
-}
-// FunciÃ³n para generar las estrellas de rating
+// Función para generar estrellas de rating
 function generateStars(rating) {
-    let stars = '';
-    for (let i = 0; i < rating; i++) {
-        stars += '<div class="bi-star-fill"></div>';
-    }
-    return stars;
+  let stars = "";
+  for (let i = 0; i < rating; i++) {
+    stars += '<div class="bi-star-fill"></div>';
+  }
+  return stars;
 }
 
-// FunciÃ³n para crear el HTML de un producto en la lista
-function createProductCard(product) {
-    const discountBadge = product.hasDiscount ? 
-        '<div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>' : '';
-    
-    const stockBadge = product.stock === 0 ? 
-        '<div class="badge bg-danger text-white position-absolute" style="top: 0.5rem; left: 0.5rem">Sin Stock</div>' : '';
-    
-    const ratingSection = product.rating ? 
-        `<div class="d-flex justify-content-center small text-warning mb-2">
-            ${generateStars(product.rating)}
-        </div>` : '';
-    
-    const priceSection = product.hasDiscount ? 
-        `<span class="text-muted text-decoration-line-through">$${product.originalPrice.toFixed(2)}</span>
-         $${product.price.toFixed(2)}` : 
-        `$${product.price.toFixed(2)}`;
+// ------------------- CARRITO -------------------
 
-    const isOutOfStock = product.stock === 0;
-    const cardClass = isOutOfStock ? 'card h-100 out-of-stock' : 'card h-100';
-    const imageClass = isOutOfStock ? 'card-img-top out-of-stock-img' : 'card-img-top';
-
-    return `
-        <div class="col mb-5">
-            <div class="${cardClass}" style="cursor: pointer;" onclick="viewProduct(${product.id})">
-                ${discountBadge}
-                ${stockBadge}
-                <!-- Product image-->
-                <img class="${imageClass}" src="${product.image}" alt="${product.name}" style="cursor: pointer;" />
-                <!-- Product details-->
-                <div class="card-body p-4">
-                    <div class="text-center">
-                        <!-- Product name-->
-                        <h5 class="fw-bolder" style="cursor: pointer;">${product.name}</h5>
-                        ${ratingSection}
-                        <!-- Product price-->
-                        ${priceSection}
-                        ${isOutOfStock ? '<p class="text-danger mt-2 mb-0"><small>No disponible</small></p>' : ''}
-                    </div>
-                </div>
-                <!-- Product actions-->
-                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                    <div class="text-center">
-                        ${product.buttonText === "View options" ? 
-                            `<a class="btn btn-outline-dark mt-auto" href="#" onclick="event.stopPropagation(); viewProduct(${product.id})">Ver detalle</a>` :
-                            isOutOfStock ? 
-                                `<a class="btn btn-outline-secondary mt-auto" href="#" onclick="event.stopPropagation(); viewProduct(${product.id})">Ver detalle</a>` :
-                                `<a class="btn btn-outline-dark mt-auto" href="#" onclick="event.stopPropagation(); addToCartFromMain(${product.id})">${product.buttonText}</a>`
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
+function addToCart(productId, quantity = 1) {
+  let cart = JSON.parse(localStorage.getItem("cart")) || {};
+  cart[productId] = (cart[productId] || 0) + quantity;
+  localStorage.setItem("cart", JSON.stringify(cart));
+  refreshCartCounter();
 }
 
-// FunciÃ³n para renderizar todos los productos
-function renderProducts() {
-    const container = document.getElementById('products-container');
-    if (!container) {
-        console.log('Contenedor de productos no encontrado - probablemente estamos en pÃ¡gina de detalle');
-        return;
-    }
-    
-    let productsHTML = '';
-    products.forEach(product => {
-        productsHTML += createProductCard(product);
-    });
-    
-    container.innerHTML = productsHTML;
+function addToCartFromMain(productId) {
+  addToCart(productId, 1);
 }
 
-// FunciÃ³n para ver el detalle de un producto
-function viewProduct(productId) {
-    window.location.href = `item_detail.html?id=${productId}`;
+function addToCartFromDetail(productId) {
+  const quantityInput = document.getElementById("inputQuantity");
+  const quantity = parseInt(quantityInput.value) || 1;
+
+  if (quantity < 1) {
+    alert("La cantidad debe ser mayor a 0");
+    return;
+  }
+
+  const product = products.find((p) => p.id === productId);
+  if (product && quantity > product.stock) {
+    alert(`Solo hay ${product.stock} unidades disponibles de este producto.`);
+    quantityInput.value = product.stock;
+    return;
+  }
+
+  addToCart(productId, quantity);
+  quantityInput.value = 1;
 }
 
-// FunciÃ³n para renderizar el detalle del producto
-function renderProductDetail() {
-    const productId = parseInt(getUrlParameter('id'));
-    const container = document.getElementById('product-detail-container');
-    
-    if (!container) {
-        console.log('Contenedor de detalle no encontrado - probablemente estamos en pÃ¡gina principal');
-        return;
-    }
-    
-    if (!productId) {
-        container.innerHTML = '<div class="text-center"><h2>Producto no encontrado</h2><a href="index.html" class="btn btn-primary">Volver al inicio</a></div>';
-        return;
-    }
+function refreshCartCounter() {
+  let cart = JSON.parse(localStorage.getItem("cart")) || {};
+  let count = Object.values(cart).reduce((a, b) => a + b, 0);
+  const counter = document.getElementById("cart-counter");
+  if (counter) {
+    counter.textContent = count;
+  }
+}
 
-    const product = products.find(p => p.id === productId);
-    if (!product) {
-        container.innerHTML = '<div class="text-center"><h2>Producto no encontrado</h2><a href="index.html" class="btn btn-primary">Volver al inicio</a></div>';
-        return;
-    }
+// ------------------- DETALLE -------------------
 
-    // Actualizar el tÃ­tulo de la pÃ¡gina
-    document.title = `${product.name} - La Bodega de Ana`;
+function renderProductDetail(productId) {
+  const product = products.find((p) => p.id === productId);
+  const container = document.getElementById("product-detail-container");
 
-    const discountBadge = product.hasDiscount ? 
-        '<span class="badge bg-danger me-2">En Oferta</span>' : '';
-    
-    const ratingSection = product.rating ? 
-        `<div class="d-flex align-items-center mb-3">
+  if (!product || !container) {
+    return;
+  }
+
+  const discountBadge = product.hasDiscount
+    ? '<span class="badge bg-danger me-2">En Oferta</span>'
+    : "";
+
+  const ratingSection = product.rating
+    ? `<div class="d-flex align-items-center mb-3">
             <div class="d-flex text-warning me-2">
                 ${generateStars(product.rating)}
             </div>
             <span class="text-muted">(${product.rating}.0)</span>
-        </div>` : '';
-    
-    const priceSection = product.hasDiscount ? 
-        `<div class="mb-3">
-            <span class="text-muted text-decoration-line-through fs-5 me-2">$${product.originalPrice.toFixed(2)}</span>
-            <span class="fs-3 fw-bold text-success">$${product.price.toFixed(2)}</span>
-            <span class="badge bg-success ms-2">${Math.round((1 - product.price/product.originalPrice) * 100)}% OFF</span>
-        </div>` : 
-        `<div class="mb-3">
+        </div>`
+    : "";
+
+  const priceSection = product.hasDiscount
+    ? `<div class="mb-3">
+            <span class="text-muted text-decoration-line-through fs-5 me-2">$${product.originalPrice.toFixed(
+              2
+            )}</span>
+            <span class="fs-3 fw-bold text-success">$${product.price.toFixed(
+              2
+            )}</span>
+        </div>`
+    : `<div class="mb-3">
             <span class="fs-3 fw-bold">$${product.price.toFixed(2)}</span>
         </div>`;
 
-    const detailsSection = product.details ? 
-        `<div class="row mt-4">
-            <div class="col-12">
-                <h6 class="fw-bold">Especificaciones:</h6>
-                <ul class="list-unstyled">
-                    ${Object.entries(product.details).map(([key, value]) => 
-                        `<li><strong>${key}:</strong> ${value}</li>`
-                    ).join('')}
-                </ul>
-            </div>
-        </div>` : '';
-
-    const isOutOfStock = product.stock === 0;
-    const stockClass = isOutOfStock ? 'out-of-stock-detail' : '';
-    const imageClass = isOutOfStock ? 'card-img-top mb-5 mb-md-0 out-of-stock-img-detail' : 'card-img-top mb-5 mb-md-0';
-    
-    const stockSection = isOutOfStock ? 
-        `<div class="d-flex align-items-center mb-4">
+  const stockSection =
+    product.stock === 0
+      ? `<div class="d-flex align-items-center mb-4">
             <span class="me-3 text-danger"><strong>Stock:</strong> Sin stock disponible</span>
             <span class="badge bg-danger">No disponible</span>
-        </div>` :
-        `<div class="d-flex align-items-center mb-4">
-            <span class="me-3"><strong>Stock:</strong> ${product.stock || 0} disponibles</span>
+        </div>`
+      : `<div class="d-flex align-items-center mb-4">
+            <span class="me-3"><strong>Stock:</strong> ${product.stock} disponibles</span>
         </div>`;
 
-    const actionSection = isOutOfStock ? 
-        `<div class="d-flex align-items-center mb-4">
-            <div class="alert alert-warning" role="alert">
-                <i class="bi-exclamation-triangle me-2"></i>
-                Este producto no estÃ¡ disponible actualmente. Puedes contactarnos para mÃ¡s informaciÃ³n.
-            </div>
-        </div>
-        <div class="d-flex">
-            <button class="btn btn-outline-secondary flex-shrink-0 me-3" type="button" disabled>
-                <i class="bi-cart-fill me-1"></i>
-                Sin stock
-            </button>
-            <button class="btn btn-outline-info flex-shrink-0" type="button" onclick="contactForProduct(${product.id})">
-                <i class="bi-envelope me-1"></i>
-                Consultar disponibilidad
-            </button>
-        </div>` :
-        `<div class="d-flex">
-            <input class="form-control text-center me-3" id="inputQuantity" type="number" value="1" min="1" max="${product.stock || 1}" style="max-width: 5rem" />
-            <button class="btn btn-outline-dark flex-shrink-0" type="button" onclick="addToCartFromDetail(${product.id})">
+  const actionSection =
+    product.stock === 0
+      ? `<div class="alert alert-warning" role="alert">
+            <i class="bi-exclamation-triangle me-2"></i>
+            Este producto no está disponible actualmente.
+        </div>`
+      : `<div class="d-flex">
+            <input class="form-control text-center me-3" id="inputQuantity" 
+                   type="number" value="1" min="1" max="${product.stock}" 
+                   style="max-width: 5rem" />
+            <button class="btn btn-outline-dark flex-shrink-0" type="button" 
+                    onclick="addToCartFromDetail(${product.id})">
                 <i class="bi-cart-fill me-1"></i>
                 Agregar al carrito
             </button>
         </div>`;
 
-    const productDetailHTML = `
-        <div class="row gx-4 gx-lg-5 align-items-center ${stockClass}">
+  container.innerHTML = `
+        <div class="row gx-4 gx-lg-5 align-items-center">
             <div class="col-md-6">
-                <img class="${imageClass}" src="${product.image}" alt="${product.name}" />
+                <img class="card-img-top mb-5 mb-md-0" src="${product.image}" alt="${product.name}" />
             </div>
             <div class="col-md-6">
-                <div class="small mb-1">${product.category || 'CategorÃ­a'}</div>
+                <div class="small mb-1">${product.category}</div>
                 <h1 class="display-5 fw-bolder">${product.name}</h1>
                 ${discountBadge}
                 ${ratingSection}
                 ${priceSection}
-                <p class="lead">${product.description || 'DescripciÃ³n del producto no disponible.'}</p>
+                <p class="lead">${product.description}</p>
                 ${stockSection}
                 ${actionSection}
-                ${detailsSection}
                 <div class="mt-4">
-                    <a href="index.html" class="btn btn-secondary">
+                    <a href="/productos" class="btn btn-secondary">
                         <i class="bi-arrow-left me-1"></i>
                         Volver a la tienda
                     </a>
@@ -351,72 +170,11 @@ function renderProductDetail() {
             </div>
         </div>
     `;
-
-    container.innerHTML = productDetailHTML;
 }
 
-// FunciÃ³n para agregar al carrito desde la pÃ¡gina de detalle
-function addToCartFromDetail(productId) {
-    const quantityInput = document.getElementById('inputQuantity');
-    const quantity = parseInt(quantityInput.value) || 1;
-    
-    // Validar que la cantidad sea vÃ¡lida
-    if (quantity < 1) {
-        alert('La cantidad debe ser mayor a 0');
-        return;
-    }
-    
-    // Obtener el producto para validar stock
-    const product = products.find(p => p.id === productId);
-    if (product && quantity > product.stock) {
-        alert(`Solo hay ${product.stock} unidades disponibles de este producto.`);
-        quantityInput.value = product.stock;
-        return;
-    }
-    
-    addToCart(productId, quantity);
-    
-    // Resetear el input de cantidad a 1 despuÃ©s de agregar
-    quantityInput.value = 1;
-}
+// ------------------- INIT -------------------
 
-// FunciÃ³n para contactar sobre un producto sin stock
-function contactForProduct(productId) {
-    const product = products.find(p => p.id === productId);
-    if (product) {
-        alert(`Has solicitado informaciÃ³n sobre: ${product.name}\n\nTe contactaremos pronto para informarte sobre la disponibilidad de este producto.`);
-    }
-}
-
-// FunciÃ³n para agregar al carrito (para la pÃ¡gina principal)
-function addToCartFromMain(productId) {
-    addToCart(productId, 1);
-}
-
-// FunciÃ³n para actualizar el contador del carrito (deprecated - usar la del cart.js)
-function updateCartCounter(quantity = 1) {
-    // Esta funciÃ³n ahora estÃ¡ manejada por cart.js
-    // Se mantiene por compatibilidad
-}
-
-// Inicializar cuando el DOM estÃ© cargado
-document.addEventListener('DOMContentLoaded', async function() {
-    await loadProducts();
-    
-    // Inicializar el carrito despuÃ©s de cargar los productos
-    if (typeof initializeCart === 'function') {
-        initializeCart();
-    } else if (typeof window.refreshCartCounter === 'function') {
-        window.refreshCartCounter();
-    }
-    
-    // Verificar si estamos en la pÃ¡gina de detalle
-    const isDetailPage = window.location.pathname.includes('item_detail.html');
-    
-    if (isDetailPage) {
-        renderProductDetail();
-    } else {
-        renderProducts();
-    }
+document.addEventListener("DOMContentLoaded", () => {
+  initializeProducts();
+  refreshCartCounter();
 });
-

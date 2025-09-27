@@ -41,7 +41,7 @@ public class ProductoDAOImp implements ProductoDAO {
             throw new IllegalArgumentException("No existe un producto con el id " + id);
         }
 
-        producto.setId(id);
+        producto.setProductoId(id);
         entityManager.merge(producto);
     }
 

@@ -1,73 +1,58 @@
 package com.proyecto1.demo.Models.Entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "producto")
 public class Producto {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "producto_id")
+    private Long productoId;
 
+    @Column(name = "categoria_id")
+    private Integer categoriaId;
+
+    @Column(nullable = false, length = 255)
     private String nombre;
-    private Double precio;
+
+    @Column(length = 255)
     private String descripcion;
-    private Integer cantidad;
+
+    @Column(nullable = false)
+    private Double precio;
 
     @Column(name = "precio_original")
     private Double precioOriginal;
 
-    @Column(name = "imagen_url", length = 512)
-    private String imagenUrl;
+    @Column(length = 255)
+    private String imagen;
 
-    @Column(name = "categoria")
-    private String categoria;
+    @Column(name = "hay_descuento")
+    private Boolean hayDescuento = false;
 
-    @Column(name = "rating")
+    private Double descuento;
+
+    private Integer stock;
+
     private Integer rating;
 
-    @Column(name = "boton_texto")
-    private String botonTexto;
-
-    @Column(name = "has_discount")
-    private Boolean hasDiscount;
-
-    @Column(name = "detalles", columnDefinition = "TEXT")
-    private String detalles;
-
-    public Producto(Long id, String nombre, Double precio, String descripcion, Integer cantidad) {
-        this.id = id;
-        this.nombre = nombre;
-        this.precio = precio;
-        this.descripcion = descripcion;
-        this.cantidad = cantidad;
-        this.precioOriginal = null;
-        this.imagenUrl = null;
-        this.categoria = "General";
-        this.rating = 5;
-        this.botonTexto = "Agregar al carrito";
-        this.hasDiscount = Boolean.FALSE;
-        this.detalles = null;
+    // ====== Getters y Setters ======
+    public Long getProductoId() {
+        return productoId;
     }
 
-    public Producto() {
-        this.botonTexto = "Agregar al carrito";
-        this.hasDiscount = Boolean.FALSE;
-        this.categoria = "General";
-        this.rating = 5;
+    public void setProductoId(Long productoId) {
+        this.productoId = productoId;
     }
 
-    public Long getId() {
-        return id;
+    public Integer getCategoriaId() {
+        return categoriaId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setCategoriaId(Integer categoriaId) {
+        this.categoriaId = categoriaId;
     }
 
     public String getNombre() {
@@ -78,14 +63,6 @@ public class Producto {
         this.nombre = nombre;
     }
 
-    public Double getPrecio() {
-        return precio;
-    }
-
-    public void setPrecio(Double precio) {
-        this.precio = precio;
-    }
-
     public String getDescripcion() {
         return descripcion;
     }
@@ -94,12 +71,12 @@ public class Producto {
         this.descripcion = descripcion;
     }
 
-    public Integer getCantidad() {
-        return cantidad;
+    public Double getPrecio() {
+        return precio;
     }
 
-    public void setCantidad(Integer cantidad) {
-        this.cantidad = cantidad;
+    public void setPrecio(Double precio) {
+        this.precio = precio;
     }
 
     public Double getPrecioOriginal() {
@@ -110,20 +87,36 @@ public class Producto {
         this.precioOriginal = precioOriginal;
     }
 
-    public String getImagenUrl() {
-        return imagenUrl;
+    public String getImagen() {
+        return imagen;
     }
 
-    public void setImagenUrl(String imagenUrl) {
-        this.imagenUrl = imagenUrl;
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
     }
 
-    public String getCategoria() {
-        return categoria;
+    public Boolean getHayDescuento() {
+        return hayDescuento;
     }
 
-    public void setCategoria(String categoria) {
-        this.categoria = categoria;
+    public void setHayDescuento(Boolean hayDescuento) {
+        this.hayDescuento = hayDescuento;
+    }
+
+    public Double getDescuento() {
+        return descuento;
+    }
+
+    public void setDescuento(Double descuento) {
+        this.descuento = descuento;
+    }
+
+    public Integer getStock() {
+        return stock;
+    }
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
     }
 
     public Integer getRating() {
@@ -134,27 +127,9 @@ public class Producto {
         this.rating = rating;
     }
 
-    public String getBotonTexto() {
-        return botonTexto;
-    }
-
-    public void setBotonTexto(String botonTexto) {
-        this.botonTexto = botonTexto;
-    }
-
-    public Boolean getHasDiscount() {
-        return hasDiscount;
-    }
-
-    public void setHasDiscount(Boolean hasDiscount) {
-        this.hasDiscount = hasDiscount;
-    }
-
-    public String getDetalles() {
-        return detalles;
-    }
-
-    public void setDetalles(String detalles) {
-        this.detalles = detalles;
+    // ====== Métodos auxiliares ======
+    @Transient
+    public boolean isAgotado() {
+        return stock == null || stock <= 0;
     }
 }

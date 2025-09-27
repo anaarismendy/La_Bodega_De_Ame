@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
   <head>
     <meta charset="utf-8" />
     <meta
@@ -109,6 +109,7 @@
         </div>
       </div>
     </nav>
+
     <!-- Hero Carousel -->
     <div class="hero-carousel owl-carousel owl-theme">
       <div class="item">
@@ -192,101 +193,128 @@
         </div>
       </div>
     </div>
+
     <!-- Section-->
+    <!-- Section Productos -->
     <section class="py-5">
       <div class="container px-4 px-lg-5 mt-5">
-        <!-- Contenedor dinámico para productos -->
         <div
           id="products-container"
           class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center"
         >
+          <!-- Si no hay productos -->
           <div class="col-12" th:if="${#lists.isEmpty(productos)}">
             <div class="alert alert-info text-center mb-0">
               No hay productos disponibles en este momento.
             </div>
           </div>
+
+          <!-- Iteración de productos -->
           <div
             class="col mb-5"
             th:each="producto : ${productos}"
-            th:with="precio=${producto.precio != null ? producto.precio : 0}, precioOriginal=${producto.precioOriginal != null ? producto.precioOriginal : 0}, tieneOriginal=${producto.precioOriginal != null}, agotado=${producto.cantidad != null && producto.cantidad <= 0}, descuento=${tieneOriginal && ((producto.hasDiscount != null && producto.hasDiscount) || (producto.hasDiscount == null && precioOriginal > precio))}"
+            th:attr="data-id=${producto.productoId},
+                 data-name=${producto.nombre},
+                 data-price=${producto.precio},
+                 data-original-price=${producto.precioOriginal},
+                 data-image=${producto.imagen},
+                 data-has-discount=${producto.hayDescuento},
+                 data-rating=${producto.rating},
+                 data-stock=${producto.stock},
+                 data-description=${producto.descripcion},
+                 data-category=${producto.categoriaId}"
           >
             <div
               class="card h-100"
               style="cursor: pointer"
-              th:classappend="${agotado} ? ' out-of-stock' : ''"
-              th:onclick="|viewProduct(${producto.id})|"
+              th:classappend="${producto.agotado} ? ' out-of-stock' : ''"
+              th:onclick="|viewProduct(${producto.productoId})|"
             >
+              <!-- Badge descuento -->
               <div
                 class="badge bg-dark text-white position-absolute"
                 style="top: 0.5rem; right: 0.5rem"
-                th:if="${descuento}"
+                th:if="${producto.hayDescuento}"
               >
                 Sale
               </div>
+
+              <!-- Badge sin stock -->
               <div
                 class="badge bg-danger text-white position-absolute"
                 style="top: 0.5rem; left: 0.5rem"
-                th:if="${agotado}"
+                th:if="${producto.agotado}"
               >
                 Sin Stock
               </div>
+
+              <!-- Imagen -->
               <img
                 class="card-img-top"
                 style="cursor: pointer"
-                th:classappend="${agotado} ? ' out-of-stock-img' : ''"
-                th:src="${!#strings.isEmpty(producto.imagenUrl) ? producto.imagenUrl : 'https://via.placeholder.com/450x300?text=Producto'}"
-                th:alt="${!#strings.isEmpty(producto.nombre) ? producto.nombre : 'Producto'}"
+                th:classappend="${producto.agotado} ? ' out-of-stock-img' : ''"
+                th:src="${#strings.isEmpty(producto.imagen) ? 
+                      'https://via.placeholder.com/450x300?text=Producto' : 
+                      (producto.imagen.startsWith('http') ? producto.imagen : '/images/licores/' + producto.imagen)}"
+                th:alt="${#strings.isEmpty(producto.nombre) ? 'Producto' : producto.nombre}"
               />
+
+              <!-- Card body -->
               <div class="card-body p-4">
                 <div class="text-center">
-                  <h5
-                    class="fw-bolder"
-                    style="cursor: pointer"
-                    th:text="${!#strings.isEmpty(producto.nombre) ? producto.nombre : 'Producto'}"
-                  >
+                  <!-- Nombre -->
+                  <h5 class="fw-bolder" th:text="${producto.nombre}">
                     Producto
                   </h5>
+
+                  <!-- Rating -->
                   <div
                     class="d-flex justify-content-center small text-warning mb-2"
-                    th:if="${producto.rating != null && producto.rating > 0}"
+                    th:if="${producto.rating != null and producto.rating > 0}"
                   >
                     <div
                       class="bi-star-fill"
                       th:each="star : ${#numbers.sequence(1, producto.rating)}"
                     ></div>
                   </div>
+
+                  <!-- Precios -->
                   <div>
                     <span
                       class="text-muted text-decoration-line-through"
-                      th:if="${descuento}"
-                      th:text="${'$' + #strings.format('%.2f', precioOriginal)}"
+                      th:if="${producto.precioOriginal != null}"
+                      th:text="|$${#numbers.formatDecimal(producto.precioOriginal, 0, 'NONE', 2, 'POINT')}|"
                     ></span>
                     <span
                       class="ms-1"
-                      th:text="${'$' + #strings.format('%.2f', precio)}"
+                      th:text="|$${#numbers.formatDecimal(producto.precio, 0, 'NONE', 2, 'POINT')}|"
                     ></span>
                   </div>
-                  <p class="text-danger mt-2 mb-0" th:if="${agotado}">
+
+                  <!-- Texto agotado -->
+                  <p class="text-danger mt-2 mb-0" th:if="${producto.agotado}">
                     <small>No disponible</small>
                   </p>
                 </div>
               </div>
+
+              <!-- Card footer -->
               <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                 <div class="text-center">
                   <a
                     class="btn btn-outline-secondary mt-auto"
                     href="#"
-                    th:if="${agotado}"
-                    th:onclick="|event.stopPropagation(); viewProduct(${producto.id}); return false;|"
+                    th:if="${producto.agotado}"
+                    th:onclick="|event.stopPropagation(); viewProduct(${producto.productoId}); return false;|"
                   >
                     Ver detalle
                   </a>
                   <a
                     class="btn btn-outline-dark mt-auto"
                     href="#"
-                    th:if="${!agotado}"
-                    th:onclick="|event.stopPropagation(); addToCartFromMain(${producto.id}); return false;|"
-                    th:text="${!#strings.isEmpty(producto.botonTexto) ? producto.botonTexto : 'Agregar al carrito'}"
+                    th:if="${!producto.agotado}"
+                    th:onclick="|event.stopPropagation(); addToCartFromMain(${producto.productoId}); return false;|"
+                    th:text="${#strings.isEmpty(producto.botonTexto) ? 'Agregar al carrito' : producto.botonTexto}"
                   >
                     Agregar al carrito
                   </a>
@@ -304,8 +332,7 @@
         <!-- Cart Header -->
         <div class="cart-header">
           <h5 class="cart-title">
-            <i class="bi-cart-fill me-2"></i>
-            Carrito de Compras
+            <i class="bi-cart-fill me-2"></i> Carrito de Compras
           </h5>
           <button class="btn-close-cart" onclick="closeCart()">
             <i class="bi-x-lg"></i>
@@ -320,11 +347,8 @@
             <h4 class="mt-3">Tu carrito está vacío</h4>
             <p class="text-muted">Agrega algunos productos para comenzar</p>
           </div>
-
           <!-- Cart Items -->
-          <div id="cartItems" class="cart-items" style="display: none">
-            <!-- Items will be dynamically inserted here -->
-          </div>
+          <div id="cartItems" class="cart-items" style="display: none"></div>
         </div>
 
         <!-- Cart Footer -->
@@ -357,12 +381,10 @@
               class="btn btn-outline-secondary w-100 mb-2"
               onclick="clearCart()"
             >
-              <i class="bi-trash me-2"></i>
-              Vaciar Carrito
+              <i class="bi-trash me-2"></i> Vaciar Carrito
             </button>
             <button class="btn btn-success w-100" onclick="proceedToCheckout()">
-              <i class="bi-credit-card me-2"></i>
-              Proceder al Pago
+              <i class="bi-credit-card me-2"></i> Proceder al Pago
             </button>
           </div>
         </div>
@@ -393,36 +415,6 @@
     </script>
     <!-- Core theme JS-->
     <script th:src="@{/js/scripts.js}" src="/js/scripts.js"></script>
-    <script th:inline="javascript">
-      if (Array.isArray(window.__SPRING_PRODUCTS__)) {
-        products = window.__SPRING_PRODUCTS__
-          .map(function (item) {
-            return normalizeProduct(item);
-          })
-          .filter(Boolean);
-        window.loadProducts = async function () {
-          return products;
-        };
-        if (typeof renderProducts === "function") {
-          window.renderProducts = function () {
-            const container = document.getElementById("products-container");
-            if (!container) {
-              return;
-            }
-            if (!products || products.length === 0) {
-              container.innerHTML =
-                '<div class="col-12"><div class="alert alert-info text-center mb-0">No hay productos disponibles en este momento.</div></div>';
-              return;
-            }
-            let productsHTML = "";
-            products.forEach(function (product) {
-              productsHTML += createProductCard(product);
-            });
-            container.innerHTML = productsHTML;
-          };
-        }
-      }
-    </script>
     <!-- Cart JS -->
     <script th:src="@{/js/cart.js}" src="/js/cart.js"></script>
   </body>
