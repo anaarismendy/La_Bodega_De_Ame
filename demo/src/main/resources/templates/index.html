@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -13,7 +13,8 @@
     <link
       rel="icon"
       type="image/x-icon"
-      th:href="@{/assets/bag_buy_cart_market_shop_shopping_tote_icon_123191.ico}" href="/assets/bag_buy_cart_market_shop_shopping_tote_icon_123191.ico"
+      th:href="@{/assets/bag_buy_cart_market_shop_shopping_tote_icon_123191.ico}"
+      href="/assets/bag_buy_cart_market_shop_shopping_tote_icon_123191.ico"
     />
     <!-- Bootstrap icons-->
     <link
@@ -21,13 +22,29 @@
       rel="stylesheet"
     />
     <!-- Owl Carousel CSS -->
-    <link th:href="@{/css/owl.carousel.min.css}" href="/css/owl.carousel.min.css" rel="stylesheet" />
+    <link
+      th:href="@{/css/owl.carousel.min.css}"
+      href="/css/owl.carousel.min.css"
+      rel="stylesheet"
+    />
     <!-- Core theme CSS (includes Bootstrap)-->
-    <link th:href="@{/css/styles.css}" href="/css/styles.css" rel="stylesheet" />
+    <link
+      th:href="@{/css/styles.css}"
+      href="/css/styles.css"
+      rel="stylesheet"
+    />
     <!-- Custom CSS -->
-    <link th:href="@{/css/custom.css}" href="/css/custom.css" rel="stylesheet" />
+    <link
+      th:href="@{/css/custom.css}"
+      href="/css/custom.css"
+      rel="stylesheet"
+    />
     <!-- Custom carousel CSS -->
-    <link th:href="@{/css/carousel-custom.css}" href="/css/carousel-custom.css" rel="stylesheet" />
+    <link
+      th:href="@{/css/carousel-custom.css}"
+      href="/css/carousel-custom.css"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <!-- Navigation-->
@@ -48,7 +65,11 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
             <li class="nav-item">
-              <a class="nav-link active" aria-current="page" href="index.html"
+              <a
+                class="nav-link active"
+                aria-current="page"
+                th:href="@{/}"
+                href="/"
                 >Home</a
               >
             </li>
@@ -92,7 +113,8 @@
     <div class="hero-carousel owl-carousel owl-theme">
       <div class="item">
         <img
-          th:src="@{/images/licores/lista-de-bebidas-alcoholicas-por-nivel-de-porcentaje-de-alcohol-dos.webp}" src="/images/licores/lista-de-bebidas-alcoholicas-por-nivel-de-porcentaje-de-alcohol-dos.webp"
+          th:src="@{/images/licores/lista-de-bebidas-alcoholicas-por-nivel-de-porcentaje-de-alcohol-dos.webp}"
+          src="/images/licores/lista-de-bebidas-alcoholicas-por-nivel-de-porcentaje-de-alcohol-dos.webp"
           alt="Licores Premium"
         />
         <div class="carousel-overlay">
@@ -104,7 +126,8 @@
       </div>
       <div class="item">
         <img
-          th:src="@{/images/licores/Chuvas-Extra-13-cover.jpg}" src="/images/licores/Chuvas-Extra-13-cover.jpg"
+          th:src="@{/images/licores/Chuvas-Extra-13-cover.jpg}"
+          src="/images/licores/Chuvas-Extra-13-cover.jpg"
           alt="Whisky Escocés"
           class="position-very-top"
         />
@@ -117,7 +140,8 @@
       </div>
       <div class="item">
         <img
-          th:src="@{/images/licores/Espresso-Cocktail-GQ-1Nov16_b.webp}" src="/images/licores/Espresso-Cocktail-GQ-1Nov16_b.webp"
+          th:src="@{/images/licores/Espresso-Cocktail-GQ-1Nov16_b.webp}"
+          src="/images/licores/Espresso-Cocktail-GQ-1Nov16_b.webp"
           alt="Vodka Premium"
         />
         <div class="carousel-overlay">
@@ -128,7 +152,11 @@
         </div>
       </div>
       <div class="item">
-        <img th:src="@{/images/licores/ron.webp}" src="/images/licores/ron.webp" alt="Ron Caribeño" />
+        <img
+          th:src="@{/images/licores/ron.webp}"
+          src="/images/licores/ron.webp"
+          alt="Ron Caribeño"
+        />
         <div class="carousel-overlay">
           <div class="carousel-content">
             <h1>Ron Caribeño</h1>
@@ -138,7 +166,8 @@
       </div>
       <div class="item">
         <img
-          th:src="@{/images/licores/beneficios_del_tequila_222.webp}" src="/images/licores/beneficios_del_tequila_222.webp"
+          th:src="@{/images/licores/beneficios_del_tequila_222.webp}"
+          src="/images/licores/beneficios_del_tequila_222.webp"
           alt="Tequila Mexicano"
           class="position-very-top"
         />
@@ -151,7 +180,8 @@
       </div>
       <div class="item">
         <img
-          th:src="@{/images/licores/beefeater-gin-cocktail-ginita-aspect-ratio-16-9.avif}" src="/images/licores/beefeater-gin-cocktail-ginita-aspect-ratio-16-9.avif"
+          th:src="@{/images/licores/beefeater-gin-cocktail-ginita-aspect-ratio-16-9.avif}"
+          src="/images/licores/beefeater-gin-cocktail-ginita-aspect-ratio-16-9.avif"
           alt="Gin Artesanal"
         />
         <div class="carousel-overlay">
@@ -170,7 +200,100 @@
           id="products-container"
           class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center"
         >
-          <!-- Los productos se generarán dinámicamente aquí -->
+          <div class="col-12" th:if="${#lists.isEmpty(productos)}">
+            <div class="alert alert-info text-center mb-0">
+              No hay productos disponibles en este momento.
+            </div>
+          </div>
+          <div
+            class="col mb-5"
+            th:each="producto : ${productos}"
+            th:with="precio=${producto.precio != null ? producto.precio : 0}, precioOriginal=${producto.precioOriginal != null ? producto.precioOriginal : 0}, tieneOriginal=${producto.precioOriginal != null}, agotado=${producto.cantidad != null && producto.cantidad <= 0}, descuento=${tieneOriginal && ((producto.hasDiscount != null && producto.hasDiscount) || (producto.hasDiscount == null && precioOriginal > precio))}"
+          >
+            <div
+              class="card h-100"
+              style="cursor: pointer"
+              th:classappend="${agotado} ? ' out-of-stock' : ''"
+              th:onclick="|viewProduct(${producto.id})|"
+            >
+              <div
+                class="badge bg-dark text-white position-absolute"
+                style="top: 0.5rem; right: 0.5rem"
+                th:if="${descuento}"
+              >
+                Sale
+              </div>
+              <div
+                class="badge bg-danger text-white position-absolute"
+                style="top: 0.5rem; left: 0.5rem"
+                th:if="${agotado}"
+              >
+                Sin Stock
+              </div>
+              <img
+                class="card-img-top"
+                style="cursor: pointer"
+                th:classappend="${agotado} ? ' out-of-stock-img' : ''"
+                th:src="${!#strings.isEmpty(producto.imagenUrl) ? producto.imagenUrl : 'https://via.placeholder.com/450x300?text=Producto'}"
+                th:alt="${!#strings.isEmpty(producto.nombre) ? producto.nombre : 'Producto'}"
+              />
+              <div class="card-body p-4">
+                <div class="text-center">
+                  <h5
+                    class="fw-bolder"
+                    style="cursor: pointer"
+                    th:text="${!#strings.isEmpty(producto.nombre) ? producto.nombre : 'Producto'}"
+                  >
+                    Producto
+                  </h5>
+                  <div
+                    class="d-flex justify-content-center small text-warning mb-2"
+                    th:if="${producto.rating != null && producto.rating > 0}"
+                  >
+                    <div
+                      class="bi-star-fill"
+                      th:each="star : ${#numbers.sequence(1, producto.rating)}"
+                    ></div>
+                  </div>
+                  <div>
+                    <span
+                      class="text-muted text-decoration-line-through"
+                      th:if="${descuento}"
+                      th:text="${'$' + #strings.format('%.2f', precioOriginal)}"
+                    ></span>
+                    <span
+                      class="ms-1"
+                      th:text="${'$' + #strings.format('%.2f', precio)}"
+                    ></span>
+                  </div>
+                  <p class="text-danger mt-2 mb-0" th:if="${agotado}">
+                    <small>No disponible</small>
+                  </p>
+                </div>
+              </div>
+              <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
+                <div class="text-center">
+                  <a
+                    class="btn btn-outline-secondary mt-auto"
+                    href="#"
+                    th:if="${agotado}"
+                    th:onclick="|event.stopPropagation(); viewProduct(${producto.id}); return false;|"
+                  >
+                    Ver detalle
+                  </a>
+                  <a
+                    class="btn btn-outline-dark mt-auto"
+                    href="#"
+                    th:if="${!agotado}"
+                    th:onclick="|event.stopPropagation(); addToCartFromMain(${producto.id}); return false;|"
+                    th:text="${!#strings.isEmpty(producto.botonTexto) ? producto.botonTexto : 'Agregar al carrito'}"
+                  >
+                    Agregar al carrito
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -254,13 +377,53 @@
     <!-- Bootstrap core JS-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Owl Carousel JS -->
-    <script th:src="@{/js/owl.carousel.min.js}" src="/js/owl.carousel.min.js"></script>
+    <script
+      th:src="@{/js/owl.carousel.min.js}"
+      src="/js/owl.carousel.min.js"
+    ></script>
     <!-- Carousel initialization JS -->
-    <script th:src="@{/js/carousel-init.js}" src="/js/carousel-init.js"></script>
+    <script
+      th:src="@{/js/carousel-init.js}"
+      src="/js/carousel-init.js"
+    ></script>
+    <!-- Productos precargados desde el servidor -->
+    <script th:inline="javascript">
+      window.__SPRING_PRODUCTS__ =
+        /*[[${productos != null ? productos : T(java.util.Collections).emptyList()}]]*/ [];
+    </script>
     <!-- Core theme JS-->
     <script th:src="@{/js/scripts.js}" src="/js/scripts.js"></script>
+    <script th:inline="javascript">
+      if (Array.isArray(window.__SPRING_PRODUCTS__)) {
+        products = window.__SPRING_PRODUCTS__
+          .map(function (item) {
+            return normalizeProduct(item);
+          })
+          .filter(Boolean);
+        window.loadProducts = async function () {
+          return products;
+        };
+        if (typeof renderProducts === "function") {
+          window.renderProducts = function () {
+            const container = document.getElementById("products-container");
+            if (!container) {
+              return;
+            }
+            if (!products || products.length === 0) {
+              container.innerHTML =
+                '<div class="col-12"><div class="alert alert-info text-center mb-0">No hay productos disponibles en este momento.</div></div>';
+              return;
+            }
+            let productsHTML = "";
+            products.forEach(function (product) {
+              productsHTML += createProductCard(product);
+            });
+            container.innerHTML = productsHTML;
+          };
+        }
+      }
+    </script>
     <!-- Cart JS -->
     <script th:src="@{/js/cart.js}" src="/js/cart.js"></script>
   </body>
 </html>
-
