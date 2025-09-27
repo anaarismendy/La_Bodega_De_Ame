@@ -1,4 +1,4 @@
-
+﻿
 
 /*!
 * Start Bootstrap - Shop Homepage v5.0.6 (https://startbootstrap.com/template/shop-homepage)
@@ -12,45 +12,141 @@ let products = [];
 // Variable global para el contador del carrito
 let cartItemCount = 0;
 
-// Función para cargar productos desde JSON
+// FunciÃ³n para cargar productos desde JSON
 async function loadProducts() {
     try {
-        const response = await fetch('data/products.json');
+        const response = await fetch('/api/productos', {
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+
         if (!response.ok) {
-            throw new Error('Error al cargar productos');
+            throw new Error('Error al cargar productos: ' + response.status);
         }
-        products = await response.json();
+
+        const data = await response.json();
+
+        if (!Array.isArray(data)) {
+            throw new Error('La API no devolvió un arreglo de productos');
+        }
+
+        products = data.map(normalizeProduct).filter(Boolean);
+
+        if (products.length === 0) {
+            throw new Error('No se recibieron productos válidos desde la API');
+        }
+
         return products;
     } catch (error) {
-        console.error('Error cargando productos:', error);
-        // Fallback a productos hardcodeados si no se puede cargar el JSON
-        products = [
-            {
-                id: 1,
-                name: "Vino Tinto Premium",
-                price: 45.00,
-                originalPrice: null,
-                image: "https://images.unsplash.com/photo-1586370434639-0fe43b2d32d6?w=450&h=300&fit=crop",
-                hasDiscount: false,
-                rating: 5,
-                buttonText: "Add to cart",
-                description: "Un exquisito vino tinto premium con cuerpo completo.",
-                category: "Vinos",
-                stock: 15
-            }
-            // Se pueden agregar más productos aquí si falla la carga del JSON
-        ];
-        return products;
+        console.error('Error cargando productos desde la API:', error);
+        return await loadFallbackProducts();
     }
 }
 
-// Función para obtener parámetros de la URL
-function getUrlParameter(name) {
-    const urlParams = new URLSearchParams(window.location.search);
-    return urlParams.get(name);
+async function loadFallbackProducts() {
+    try {
+        const response = await fetch('data/products.json');
+        if (response.ok) {
+            const data = await response.json();
+            const normalized = Array.isArray(data) ? data.map(normalizeProduct).filter(Boolean) : [];
+            if (normalized.length > 0) {
+                products = normalized;
+                return products;
+            }
+        }
+    } catch (fallbackError) {
+        console.error('Error cargando productos locales:', fallbackError);
+    }
+
+    const defaultProducts = [
+        {
+            id: 1,
+            name: "Vino Tinto Premium",
+            price: 45.0,
+            originalPrice: null,
+            image: "https://images.unsplash.com/photo-1586370434639-0fe43b2d32d6?w=450&h=300&fit=crop",
+            hasDiscount: false,
+            rating: 5,
+            buttonText: "Agregar al carrito",
+            description: "Un exquisito vino tinto premium con cuerpo completo.",
+            category: "Vinos",
+            stock: 15,
+            details: {}
+        }
+    ];
+
+    products = defaultProducts.map(normalizeProduct).filter(Boolean);
+    return products;
 }
 
-// Función para generar las estrellas de rating
+function normalizeProduct(raw) {
+    if (!raw) {
+        return null;
+    }
+
+    const details = parseDetails(raw.details ?? raw.detalles);
+    const name = raw.name ?? raw.nombre ?? "Producto sin nombre";
+
+    const priceValue = raw.price ?? raw.precio ?? 0;
+    const price = typeof priceValue === "number" ? priceValue : parseFloat(priceValue) || 0;
+
+    const originalValue = raw.originalPrice ?? raw.precioOriginal ?? null;
+    const originalPrice = typeof originalValue === "number" || originalValue === null
+        ? originalValue
+        : parseFloat(originalValue) || null;
+
+    const stockValue = raw.stock ?? raw.cantidad ?? 0;
+    const stock = typeof stockValue === "number" ? stockValue : parseInt(stockValue, 10) || 0;
+
+    const hasDiscount = raw.hasDiscount ?? (originalPrice !== null && originalPrice > price);
+
+    const image = raw.image ?? raw.imagenUrl ?? "https://via.placeholder.com/450x300?text=Producto";
+    const rating = raw.rating ?? raw.calificacion ?? 5;
+
+    const buttonText = typeof raw.buttonText === "string" && raw.buttonText.trim().length > 0
+        ? raw.buttonText
+        : (stock > 0 ? "Agregar al carrito" : "Sin stock");
+
+    const description = raw.description ?? raw.descripcion ?? "Descripción no disponible.";
+    const category = raw.category ?? raw.categoria ?? "General";
+
+    return {
+        id: raw.id ?? Math.floor(Math.random() * 1000000),
+        name,
+        price,
+        originalPrice,
+        image,
+        hasDiscount,
+        rating,
+        buttonText,
+        description,
+        category,
+        stock,
+        details
+    };
+}
+
+function parseDetails(value) {
+    if (!value) {
+        return {};
+    }
+
+    if (typeof value === "object") {
+        return value;
+    }
+
+    if (typeof value === "string") {
+        try {
+            return JSON.parse(value);
+        } catch (error) {
+            console.warn('No se pudo parsear el campo detalles:', error);
+        }
+    }
+
+    return {};
+}
+// FunciÃ³n para generar las estrellas de rating
 function generateStars(rating) {
     let stars = '';
     for (let i = 0; i < rating; i++) {
@@ -59,7 +155,7 @@ function generateStars(rating) {
     return stars;
 }
 
-// Función para crear el HTML de un producto en la lista
+// FunciÃ³n para crear el HTML de un producto en la lista
 function createProductCard(product) {
     const discountBadge = product.hasDiscount ? 
         '<div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>' : '';
@@ -115,11 +211,11 @@ function createProductCard(product) {
     `;
 }
 
-// Función para renderizar todos los productos
+// FunciÃ³n para renderizar todos los productos
 function renderProducts() {
     const container = document.getElementById('products-container');
     if (!container) {
-        console.log('Contenedor de productos no encontrado - probablemente estamos en página de detalle');
+        console.log('Contenedor de productos no encontrado - probablemente estamos en pÃ¡gina de detalle');
         return;
     }
     
@@ -131,18 +227,18 @@ function renderProducts() {
     container.innerHTML = productsHTML;
 }
 
-// Función para ver el detalle de un producto
+// FunciÃ³n para ver el detalle de un producto
 function viewProduct(productId) {
     window.location.href = `item_detail.html?id=${productId}`;
 }
 
-// Función para renderizar el detalle del producto
+// FunciÃ³n para renderizar el detalle del producto
 function renderProductDetail() {
     const productId = parseInt(getUrlParameter('id'));
     const container = document.getElementById('product-detail-container');
     
     if (!container) {
-        console.log('Contenedor de detalle no encontrado - probablemente estamos en página principal');
+        console.log('Contenedor de detalle no encontrado - probablemente estamos en pÃ¡gina principal');
         return;
     }
     
@@ -157,7 +253,7 @@ function renderProductDetail() {
         return;
     }
 
-    // Actualizar el título de la página
+    // Actualizar el tÃ­tulo de la pÃ¡gina
     document.title = `${product.name} - La Bodega de Ana`;
 
     const discountBadge = product.hasDiscount ? 
@@ -210,7 +306,7 @@ function renderProductDetail() {
         `<div class="d-flex align-items-center mb-4">
             <div class="alert alert-warning" role="alert">
                 <i class="bi-exclamation-triangle me-2"></i>
-                Este producto no está disponible actualmente. Puedes contactarnos para más información.
+                Este producto no estÃ¡ disponible actualmente. Puedes contactarnos para mÃ¡s informaciÃ³n.
             </div>
         </div>
         <div class="d-flex">
@@ -237,12 +333,12 @@ function renderProductDetail() {
                 <img class="${imageClass}" src="${product.image}" alt="${product.name}" />
             </div>
             <div class="col-md-6">
-                <div class="small mb-1">${product.category || 'Categoría'}</div>
+                <div class="small mb-1">${product.category || 'CategorÃ­a'}</div>
                 <h1 class="display-5 fw-bolder">${product.name}</h1>
                 ${discountBadge}
                 ${ratingSection}
                 ${priceSection}
-                <p class="lead">${product.description || 'Descripción del producto no disponible.'}</p>
+                <p class="lead">${product.description || 'DescripciÃ³n del producto no disponible.'}</p>
                 ${stockSection}
                 ${actionSection}
                 ${detailsSection}
@@ -259,12 +355,12 @@ function renderProductDetail() {
     container.innerHTML = productDetailHTML;
 }
 
-// Función para agregar al carrito desde la página de detalle
+// FunciÃ³n para agregar al carrito desde la pÃ¡gina de detalle
 function addToCartFromDetail(productId) {
     const quantityInput = document.getElementById('inputQuantity');
     const quantity = parseInt(quantityInput.value) || 1;
     
-    // Validar que la cantidad sea válida
+    // Validar que la cantidad sea vÃ¡lida
     if (quantity < 1) {
         alert('La cantidad debe ser mayor a 0');
         return;
@@ -280,41 +376,41 @@ function addToCartFromDetail(productId) {
     
     addToCart(productId, quantity);
     
-    // Resetear el input de cantidad a 1 después de agregar
+    // Resetear el input de cantidad a 1 despuÃ©s de agregar
     quantityInput.value = 1;
 }
 
-// Función para contactar sobre un producto sin stock
+// FunciÃ³n para contactar sobre un producto sin stock
 function contactForProduct(productId) {
     const product = products.find(p => p.id === productId);
     if (product) {
-        alert(`Has solicitado información sobre: ${product.name}\n\nTe contactaremos pronto para informarte sobre la disponibilidad de este producto.`);
+        alert(`Has solicitado informaciÃ³n sobre: ${product.name}\n\nTe contactaremos pronto para informarte sobre la disponibilidad de este producto.`);
     }
 }
 
-// Función para agregar al carrito (para la página principal)
+// FunciÃ³n para agregar al carrito (para la pÃ¡gina principal)
 function addToCartFromMain(productId) {
     addToCart(productId, 1);
 }
 
-// Función para actualizar el contador del carrito (deprecated - usar la del cart.js)
+// FunciÃ³n para actualizar el contador del carrito (deprecated - usar la del cart.js)
 function updateCartCounter(quantity = 1) {
-    // Esta función ahora está manejada por cart.js
+    // Esta funciÃ³n ahora estÃ¡ manejada por cart.js
     // Se mantiene por compatibilidad
 }
 
-// Inicializar cuando el DOM esté cargado
+// Inicializar cuando el DOM estÃ© cargado
 document.addEventListener('DOMContentLoaded', async function() {
     await loadProducts();
     
-    // Inicializar el carrito después de cargar los productos
+    // Inicializar el carrito despuÃ©s de cargar los productos
     if (typeof initializeCart === 'function') {
         initializeCart();
     } else if (typeof window.refreshCartCounter === 'function') {
         window.refreshCartCounter();
     }
     
-    // Verificar si estamos en la página de detalle
+    // Verificar si estamos en la pÃ¡gina de detalle
     const isDetailPage = window.location.pathname.includes('item_detail.html');
     
     if (isDetailPage) {
@@ -323,3 +419,4 @@ document.addEventListener('DOMContentLoaded', async function() {
         renderProducts();
     }
 });
+

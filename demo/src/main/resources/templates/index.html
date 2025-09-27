@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>La Bodega de Ame</title>
+    <!-- Favicon-->
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="../assets/bag_buy_cart_market_shop_shopping_tote_icon_123191.ico"
+    />
+    <!-- Bootstrap icons-->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <!-- Owl Carousel CSS -->
+    <link href="../static/css/owl.carousel.min.css" rel="stylesheet" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="../static/css/styles.css" rel="stylesheet" />
+    <!-- Custom CSS -->
+    <link href="../static/css/custom.css" rel="stylesheet" />
+    <!-- Custom carousel CSS -->
+    <link href="../static/css/carousel-custom.css" rel="stylesheet" />
+  </head>
+  <body>
+    <!-- Navigation-->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container px-4 px-lg-5">
+        <a class="navbar-brand" href="#!">La Bodega de Ame</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="index.html"
+                >Home</a
+              >
+            </li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                id="navbarDropdown"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                >Shop</a
+              >
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <li><a class="dropdown-item" href="#!">All Products</a></li>
+                <li><hr class="dropdown-divider" /></li>
+                <li><a class="dropdown-item" href="#!">Popular Items</a></li>
+                <li><a class="dropdown-item" href="#!">New Arrivals</a></li>
+              </ul>
+            </li>
+          </ul>
+          <div class="d-flex">
+            <button
+              class="btn btn-outline-dark"
+              type="button"
+              onclick="openCart()"
+            >
+              <i class="bi-cart-fill me-1"></i>
+              Cart
+              <span
+                class="badge bg-dark text-white ms-1 rounded-pill"
+                id="cartBadge"
+                >0</span
+              >
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <!-- Hero Carousel -->
+    <div class="hero-carousel owl-carousel owl-theme">
+      <div class="item">
+        <img
+          src="../images/licores/lista-de-bebidas-alcoholicas-por-nivel-de-porcentaje-de-alcohol-dos.webp"
+          alt="Licores Premium"
+        />
+        <div class="carousel-overlay">
+          <div class="carousel-content">
+            <h1>Licores Premium</h1>
+            <p>Descubre nuestra selección de los mejores licores del mundo</p>
+          </div>
+        </div>
+      </div>
+      <div class="item">
+        <img
+          src="../images/licores/Chuvas-Extra-13-cover.jpg"
+          alt="Whisky Escocés"
+          class="position-very-top"
+        />
+        <div class="carousel-overlay">
+          <div class="carousel-content">
+            <h1>Whisky Escocés</h1>
+            <p>Auténticos whiskies de las Highlands escocesas</p>
+          </div>
+        </div>
+      </div>
+      <div class="item">
+        <img
+          src="../images/licores/Espresso-Cocktail-GQ-1Nov16_b.webp"
+          alt="Vodka Premium"
+        />
+        <div class="carousel-overlay">
+          <div class="carousel-content">
+            <h1>Vodka Premium</h1>
+            <p>La pureza y elegancia en cada gota</p>
+          </div>
+        </div>
+      </div>
+      <div class="item">
+        <img src="../images/licores/ron.webp" alt="Ron Caribeño" />
+        <div class="carousel-overlay">
+          <div class="carousel-content">
+            <h1>Ron Caribeño</h1>
+            <p>El sabor del Caribe en cada sorbo</p>
+          </div>
+        </div>
+      </div>
+      <div class="item">
+        <img
+          src="../images/licores/beneficios_del_tequila_222.webp"
+          alt="Tequila Mexicano"
+          class="position-very-top"
+        />
+        <div class="carousel-overlay">
+          <div class="carousel-content">
+            <h1>Tequila Mexicano</h1>
+            <p>Auténtico tequila 100% agave azul</p>
+          </div>
+        </div>
+      </div>
+      <div class="item">
+        <img
+          src="../images/licores/beefeater-gin-cocktail-ginita-aspect-ratio-16-9.avif"
+          alt="Gin Artesanal"
+        />
+        <div class="carousel-overlay">
+          <div class="carousel-content">
+            <h1>Gin Artesanal</h1>
+            <p>Destilado con las mejores hierbas y especias</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Section-->
+    <section class="py-5">
+      <div class="container px-4 px-lg-5 mt-5">
+        <!-- Contenedor dinámico para productos -->
+        <div
+          id="products-container"
+          class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center"
+        >
+          <!-- Los productos se generarán dinámicamente aquí -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Cart Sidebar -->
+    <div id="cartSidebar" class="cart-sidebar">
+      <div class="cart-sidebar-content">
+        <!-- Cart Header -->
+        <div class="cart-header">
+          <h5 class="cart-title">
+            <i class="bi-cart-fill me-2"></i>
+            Carrito de Compras
+          </h5>
+          <button class="btn-close-cart" onclick="closeCart()">
+            <i class="bi-x-lg"></i>
+          </button>
+        </div>
+
+        <!-- Cart Body -->
+        <div class="cart-body">
+          <!-- Empty Cart Message -->
+          <div id="emptyCart" class="empty-cart text-center">
+            <i class="bi-cart-x display-1 text-muted"></i>
+            <h4 class="mt-3">Tu carrito está vacío</h4>
+            <p class="text-muted">Agrega algunos productos para comenzar</p>
+          </div>
+
+          <!-- Cart Items -->
+          <div id="cartItems" class="cart-items" style="display: none">
+            <!-- Items will be dynamically inserted here -->
+          </div>
+        </div>
+
+        <!-- Cart Footer -->
+        <div id="cartFooter" class="cart-footer" style="display: none">
+          <div class="cart-summary">
+            <div class="summary-row">
+              <span>Productos:</span>
+              <span id="totalItems">0</span>
+            </div>
+            <div class="summary-row">
+              <span>Subtotal:</span>
+              <span id="subtotal">$0.00</span>
+            </div>
+            <div
+              class="summary-row discount"
+              id="discountRow"
+              style="display: none"
+            >
+              <span>Descuento:</span>
+              <span id="discount">-$0.00</span>
+            </div>
+            <hr />
+            <div class="summary-row total">
+              <span><strong>Total:</strong></span>
+              <span id="total"><strong>$0.00</strong></span>
+            </div>
+          </div>
+          <div class="cart-actions">
+            <button
+              class="btn btn-outline-secondary w-100 mb-2"
+              onclick="clearCart()"
+            >
+              <i class="bi-trash me-2"></i>
+              Vaciar Carrito
+            </button>
+            <button class="btn btn-success w-100" onclick="proceedToCheckout()">
+              <i class="bi-credit-card me-2"></i>
+              Proceder al Pago
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cart Overlay -->
+    <div id="cartOverlay" class="cart-overlay" onclick="closeCart()"></div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Owl Carousel JS -->
+    <script src="../static/js/owl.carousel.min.js"></script>
+    <!-- Carousel initialization JS -->
+    <script src="../static/js/carousel-init.js"></script>
+    <!-- Core theme JS-->
+    <script src="../static/js/scripts.js"></script>
+    <!-- Cart JS -->
+    <script src="-../static/js/cart.js"></script>
+  </body>
+</html>

@@ -1,49 +1,56 @@
-// package com.proyecto1.demo.Models.Entity.DAO;
+package com.proyecto1.demo.Models.Entity.DAO;
 
-// import java.util.List;
+import com.proyecto1.demo.Models.Entity.Producto;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Repository;
+import java.util.List;
 
-// import org.springframework.stereotype.Repository;
+@Repository
+public class ProductoDAOImp implements ProductoDAO {
+    @PersistenceContext
+    private EntityManager entityManager;
 
-// import com.proyecto1.demo.Models.Entity.Producto;
+    @Override
+    public List<Producto> findAll() {
+        return entityManager.createQuery("SELECT p FROM Producto p", Producto.class)
+                .getResultList();
+    }
 
-// import jakarta.persistence.EntityManager;
-// import jakarta.persistence.PersistenceContext;
-// import jakarta.transaction.Transactional;
+    @Override
+    public Producto findById(Long id) {
+        return entityManager.find(Producto.class, id);
+    }
 
-// @Repository
-// public class ProductoDAOImp implements ProductoDAO {
-//     @PersistenceContext
-//     private EntityManager entityManager;
+    @Transactional
+    @Override
+    public void save(Producto producto) {
+        entityManager.persist(producto);
+    }
 
-//     @Override
-//     public List<Producto> findAll() {
-//     return entityManager.createQuery("SELECT p FROM Producto p", Producto.class)
-//             .getResultList();
-//         }
+    @Transactional
+    @Override
+    public void update(long id, Producto producto) {
+        if (producto == null) {
+            throw new IllegalArgumentException("El producto no puede ser nulo");
+        }
 
-//     @Override
-//     public Producto findById(Long id) {
-//         return entityManager.find(Producto.class, id);
-//     }
+        Producto existente = findById(id);
+        if (existente == null) {
+            throw new IllegalArgumentException("No existe un producto con el id " + id);
+        }
 
-//     @Transactional
-//     @Override
-//     public void save(Producto producto) {
-//         entityManager.persist(producto);
-//     }
+        producto.setId(id);
+        entityManager.merge(producto);
+    }
 
-//     @Transactional
-//     @Override
-//     public void update(long id, Producto producto) {
-//         entityManager.merge(producto);
-//     }
-
-//     @Transactional
-//     @Override
-//     public void delete(Long id) {
-//         Producto producto = findById(id);
-//         if (producto != null) {
-//             entityManager.remove(producto);
-//         }
-//     }
-// }
+    @Transactional
+    @Override
+    public void delete(Long id) {
+        Producto producto = findById(id);
+        if (producto != null) {
+            entityManager.remove(producto);
+        }
+    }
+}
