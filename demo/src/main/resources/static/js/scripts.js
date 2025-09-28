@@ -15,7 +15,7 @@ let cartItemCount = 0;
 // Función para cargar productos desde JSON
 async function loadProducts() {
     try {
-        const response = await fetch('data/products.json');
+        const response = await fetch('/data/products.json');
         if (!response.ok) {
             throw new Error('Error al cargar productos');
         }
@@ -133,7 +133,7 @@ function renderProducts() {
 
 // Función para ver el detalle de un producto
 function viewProduct(productId) {
-    window.location.href = `item_detail.html?id=${productId}`;
+    window.location.href = `/item_detail?id=${productId}`;
 }
 
 // Función para renderizar el detalle del producto
@@ -147,13 +147,13 @@ function renderProductDetail() {
     }
     
     if (!productId) {
-        container.innerHTML = '<div class="text-center"><h2>Producto no encontrado</h2><a href="index.html" class="btn btn-primary">Volver al inicio</a></div>';
+        container.innerHTML = '<div class="text-center"><h2>Producto no encontrado</h2><a href="/" class="btn btn-primary">Volver al inicio</a></div>';
         return;
     }
 
     const product = products.find(p => p.id === productId);
     if (!product) {
-        container.innerHTML = '<div class="text-center"><h2>Producto no encontrado</h2><a href="index.html" class="btn btn-primary">Volver al inicio</a></div>';
+        container.innerHTML = '<div class="text-center"><h2>Producto no encontrado</h2><a href="/" class="btn btn-primary">Volver al inicio</a></div>';
         return;
     }
 
@@ -315,7 +315,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
     
     // Verificar si estamos en la página de detalle
-    const isDetailPage = window.location.pathname.includes('item_detail.html');
+    const isDetailPage = window.location.pathname.includes('item_detail');
     
     if (isDetailPage) {
         renderProductDetail();

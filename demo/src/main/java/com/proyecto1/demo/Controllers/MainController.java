@@ -15,4 +15,9 @@ public class MainController {
     public String indexPage() {
         return "index";
     }
+    
+    @GetMapping("/item_detail")
+    public String itemDetail() {
+        return "item_detail";
+    }
 }
