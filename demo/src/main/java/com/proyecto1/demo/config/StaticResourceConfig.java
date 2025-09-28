@@ -27,5 +27,6 @@ public class StaticResourceConfig implements WebMvcConfigurer {
         // Configurar recursos estáticos para datos JSON
         registry.addResourceHandler("/data/**")
                 .addResourceLocations("classpath:/data/");
+        
     }
 }

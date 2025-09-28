@@ -16,8 +16,4 @@ public class MainController {
         return "index";
     }
     
-    @GetMapping("/item_detail")
-    public String itemDetail() {
-        return "item_detail";
-    }
 }
