@@ -1,78 +1,62 @@
-// package com.proyecto1.demo.Models.Entity;
+package com.proyecto1.demo.Models.Entity;
 
-// import java.io.Serializable;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.List;
 
-// import jakarta.persistence.Column;
-// import jakarta.persistence.Entity;
-// import jakarta.persistence.GeneratedValue;
-// import jakarta.persistence.GenerationType;
-// import jakarta.persistence.Id;
-// import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.FetchType;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-// @Entity
-// @Table(name = "cliente")
-// public class Cliente implements Serializable{
-//     @Id
-//     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//     private Long id;
-//     private String nombre;
-//     private String email;
-//     private String apellido;
-//     @Column(name = "fecha_nacimiento")
-//     private String fechaNacimiento;
+@Entity
+@Table(name = "Clientes")
+@Data // Genera getters, setters, toString, equals y hashCode automáticamente
+@AllArgsConstructor // Genera un constructor con todos los campos como parámetros
+public class Cliente implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long cliente_id;
 
-//     // Constructor
-//     public Cliente(Long id, String nombre, String email, String apellido, String fechaNacimiento) {
-//         this.id = id;
-//         this.nombre = nombre;
-//         this.email = email;
-//         this.apellido = apellido;
-//         this.fechaNacimiento = fechaNacimiento;
-//     }
-    
+    @Column(name = "nombre")
+    private String nombre;
 
-//     public Cliente() {
-//     }
+    @Column(name = "apellido_1")
+    private String apellido_1;
 
+    @Column(name = "apellido_2")
+    private String apellido_2;
 
-//     // Getters y Setters
-//     public Long getId() {
-//         return id;
-//     }
+    @Column(name = "email")
+    private String email;
 
-//     public void setId(Long id) {
-//         this.id = id;
-//     }
+    @Column(name = "telefono")
+    private String telefono;
 
-//     public String getNombre() {
-//         return nombre;
-//     }
+    @Column(name = "direccion")
+    private String direccion;
 
-//     public void setNombre(String nombre) {
-//         this.nombre = nombre;
-//     }
+    @Column(name = "fecha_nacimiento")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate fechaNacimiento;
 
-//     public String getEmail() {
-//         return email;
-//     }
+    @Column(name = "fecha_registro")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDate fechaRegistro;
 
-//     public void setEmail(String email) {
-//         this.email = email;
-//     }
+    @Column(name = "estado")
+    private Boolean estado;
 
-//     public String getApellido() {
-//         return apellido;
-//     }
+    // Relación 1 a Muchos: Un cliente puede tener muchas facturas
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
+    private List<Factura_Encabezado> facturas;
 
-//     public void setApellido(String apellido) {
-//         this.apellido = apellido;
-//     }
-
-//     public String getFechaNacimiento() {
-//         return fechaNacimiento;
-//     }
-
-//     public void setFechaNacimiento(String fechaNacimiento) {
-//         this.fechaNacimiento = fechaNacimiento;
-//     }
-// }
+    public Cliente() {};
+}
