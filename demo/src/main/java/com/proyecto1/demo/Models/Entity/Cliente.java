@@ -1,78 +1,165 @@
-// package com.proyecto1.demo.Models.Entity;
+package com.proyecto1.demo.Models.Entity;
 
-// import java.io.Serializable;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-// import jakarta.persistence.Column;
-// import jakarta.persistence.Entity;
-// import jakarta.persistence.GeneratedValue;
-// import jakarta.persistence.GenerationType;
-// import jakarta.persistence.Id;
-// import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
-// @Entity
-// @Table(name = "cliente")
-// public class Cliente implements Serializable{
-//     @Id
-//     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//     private Long id;
-//     private String nombre;
-//     private String email;
-//     private String apellido;
-//     @Column(name = "fecha_nacimiento")
-//     private String fechaNacimiento;
-
-//     // Constructor
-//     public Cliente(Long id, String nombre, String email, String apellido, String fechaNacimiento) {
-//         this.id = id;
-//         this.nombre = nombre;
-//         this.email = email;
-//         this.apellido = apellido;
-//         this.fechaNacimiento = fechaNacimiento;
-//     }
+/**
+ * Entidad Cliente que representa la tabla clientes en la base de datos
+ * Implementa Serializable para compatibilidad con JPA
+ */
+@Entity
+@Table(name = "clientes")
+public class Cliente implements Serializable {
     
+    @Id
+    @Column(name = "cliente_id", length = 15, nullable = false)
+    private String clienteId; // Cédula del cliente
+    
+    @Column(name = "nombre", length = 50, nullable = false)
+    private String nombre;
+    
+    @Column(name = "\"Primer_Apellido\"", length = 50, nullable = false)
+    private String primerApellido;
+    
+    @Column(name = "\"Segundo_Apellido\"", length = 50, nullable = false)
+    private String segundoApellido;
+    
+    @Column(name = "email", length = 150, nullable = false, unique = true)
+    private String email;
+    
+    @Column(name = "telefono")
+    private Long telefono;
+    
+    @Column(name = "direccion", columnDefinition = "text")
+    private String direccion;
+    
+    @Column(name = "fecha_nacimiento")
+    private LocalDate fechaNacimiento;
+    
+    @Column(name = "fecha_registro")
+    private LocalDateTime fechaRegistro;
+    
+    @Column(name = "estado", length = 20)
+    private String estado = "activo";
 
-//     public Cliente() {
-//     }
+    // Constructores
+    public Cliente() {}
 
+    public Cliente(String clienteId, String nombre, String primerApellido, String segundoApellido, 
+                   String email, Long telefono, String direccion, LocalDate fechaNacimiento, 
+                   LocalDateTime fechaRegistro, String estado) {
+        this.clienteId = clienteId;
+        this.nombre = nombre;
+        this.primerApellido = primerApellido;
+        this.segundoApellido = segundoApellido;
+        this.email = email;
+        this.telefono = telefono;
+        this.direccion = direccion;
+        this.fechaNacimiento = fechaNacimiento;
+        this.fechaRegistro = fechaRegistro;
+        this.estado = estado;
+    }
 
-//     // Getters y Setters
-//     public Long getId() {
-//         return id;
-//     }
+    // Getters y Setters
+    public String getClienteId() {
+        return clienteId;
+    }
 
-//     public void setId(Long id) {
-//         this.id = id;
-//     }
+    public void setClienteId(String clienteId) {
+        this.clienteId = clienteId;
+    }
 
-//     public String getNombre() {
-//         return nombre;
-//     }
+    public String getNombre() {
+        return nombre;
+    }
 
-//     public void setNombre(String nombre) {
-//         this.nombre = nombre;
-//     }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-//     public String getEmail() {
-//         return email;
-//     }
+    public String getPrimerApellido() {
+        return primerApellido;
+    }
 
-//     public void setEmail(String email) {
-//         this.email = email;
-//     }
+    public void setPrimerApellido(String primerApellido) {
+        this.primerApellido = primerApellido;
+    }
 
-//     public String getApellido() {
-//         return apellido;
-//     }
+    public String getSegundoApellido() {
+        return segundoApellido;
+    }
 
-//     public void setApellido(String apellido) {
-//         this.apellido = apellido;
-//     }
+    public void setSegundoApellido(String segundoApellido) {
+        this.segundoApellido = segundoApellido;
+    }
 
-//     public String getFechaNacimiento() {
-//         return fechaNacimiento;
-//     }
+    public String getEmail() {
+        return email;
+    }
 
-//     public void setFechaNacimiento(String fechaNacimiento) {
-//         this.fechaNacimiento = fechaNacimiento;
-//     }
-// }
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Long getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(Long telefono) {
+        this.telefono = telefono;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    public LocalDate getFechaNacimiento() {
+        return fechaNacimiento;
+    }
+
+    public void setFechaNacimiento(LocalDate fechaNacimiento) {
+        this.fechaNacimiento = fechaNacimiento;
+    }
+
+    public LocalDateTime getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(LocalDateTime fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    @Override
+    public String toString() {
+        return "Cliente{" +
+                "clienteId='" + clienteId + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", primerApellido='" + primerApellido + '\'' +
+                ", segundoApellido='" + segundoApellido + '\'' +
+                ", email='" + email + '\'' +
+                ", telefono=" + telefono +
+                ", direccion='" + direccion + '\'' +
+                ", fechaNacimiento=" + fechaNacimiento +
+                ", fechaRegistro=" + fechaRegistro +
+                ", estado='" + estado + '\'' +
+                '}';
+    }
+}

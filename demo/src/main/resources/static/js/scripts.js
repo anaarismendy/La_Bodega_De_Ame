@@ -6,108 +6,143 @@
 * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-shop-homepage/blob/master/LICENSE)
 */
 
-// Variable global para almacenar productos
+/**
+ * Variable global para almacenar la lista de productos cargados desde la API
+ * Formato: Array de objetos con propiedades {id, name, price, originalPrice, image, hasDiscount, rating, buttonText, description, category, stock}
+ */
 let products = [];
 
-// Variable global para el contador del carrito
+/**
+ * Variable global para el contador de items en el carrito
+ * Se mantiene para compatibilidad con el sistema de carrito existente
+ */
 let cartItemCount = 0;
 
-// Función para cargar productos desde JSON
+/**
+ * Servicio para cargar productos desde la API REST
+ * Implementa el patrón Repository para abstraer el acceso a datos
+ * 
+ * @returns {Promise<Array>} Array de productos mapeados al formato del frontend
+ * @throws {Error} Si hay problemas de conectividad o formato de datos
+ */
 async function loadProducts() {
     try {
-        const response = await fetch('/data/products.json');
+        const response = await fetch('/api/productos');
+        
         if (!response.ok) {
-            throw new Error('Error al cargar productos');
+            throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
         }
-        products = await response.json();
+        
+        const productosDB = await response.json();
+        
+        if (productosDB.length === 0) {
+            products = [];
+            return products;
+        }
+        
+        // Mapeo de datos: Backend Entity -> Frontend Model
+        products = productosDB.map(producto => ({
+            id: producto.productoId,
+            name: producto.nombre || "Producto sin nombre",
+            price: parseFloat(producto.precio) || 0,
+            originalPrice: producto.precioOriginal ? parseFloat(producto.precioOriginal) : null,
+            image: producto.imagen || "https://images.unsplash.com/photo-1586370434639-0fe43b2d32d6?w=450&h=300&fit=crop",
+            hasDiscount: producto.hayDescuento || false,
+            rating: parseInt(producto.rating) || 5,
+            buttonText: (producto.stock > 0) ? "Add to cart" : "View options",
+            description: producto.descripcion || "Descripción no disponible",
+            category: "Productos", // TODO: Mapear desde categoriaId cuando se implemente la tabla de categorías
+            stock: parseInt(producto.stock) || 0
+        }));
+        
         return products;
     } catch (error) {
-        console.error('Error cargando productos:', error);
-        // Fallback a productos hardcodeados si no se puede cargar el JSON
-        products = [
-            {
-                id: 1,
-                name: "Vino Tinto Premium",
-                price: 45.00,
-                originalPrice: null,
-                image: "https://images.unsplash.com/photo-1586370434639-0fe43b2d32d6?w=450&h=300&fit=crop",
-                hasDiscount: false,
-                rating: 5,
-                buttonText: "Add to cart",
-                description: "Un exquisito vino tinto premium con cuerpo completo.",
-                category: "Vinos",
-                stock: 15
-            }
-            // Se pueden agregar más productos aquí si falla la carga del JSON
-        ];
-        return products;
+        console.error('Error cargando productos desde la API:', error);
+        // Fallback: Productos por defecto para mantener funcionalidad
+        return getFallbackProducts();
     }
 }
 
-// Función para obtener parámetros de la URL
+/**
+ * Productos de fallback cuando la API no está disponible
+ * Implementa el patrón Strategy para manejar diferentes fuentes de datos
+ * 
+ * @returns {Array} Array de productos por defecto
+ */
+function getFallbackProducts() {
+    products = [
+        {
+            id: 1,
+            name: "Vino Tinto Premium",
+            price: 45.00,
+            originalPrice: null,
+            image: "https://images.unsplash.com/photo-1586370434639-0fe43b2d32d6?w=450&h=300&fit=crop",
+            hasDiscount: false,
+            rating: 5,
+            buttonText: "Add to cart",
+            description: "Un exquisito vino tinto premium con cuerpo completo.",
+            category: "Vinos",
+            stock: 15
+        }
+    ];
+    return products;
+}
+
+/**
+ * Utilidad para extraer parámetros de la URL
+ * Implementa el patrón Utility para operaciones comunes
+ * 
+ * @param {string} name - Nombre del parámetro a extraer
+ * @returns {string|null} Valor del parámetro o null si no existe
+ */
 function getUrlParameter(name) {
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get(name);
 }
 
-// Función para generar las estrellas de rating
+/**
+ * Generador de HTML para estrellas de calificación
+ * Implementa el patrón Factory para crear elementos UI consistentes
+ * 
+ * @param {number} rating - Número de estrellas a mostrar (1-5)
+ * @returns {string} HTML con las estrellas generadas
+ */
 function generateStars(rating) {
-    let stars = '';
-    for (let i = 0; i < rating; i++) {
-        stars += '<div class="bi-star-fill"></div>';
-    }
-    return stars;
+    const validRating = Math.max(1, Math.min(5, rating || 0));
+    return '<div class="bi-star-fill"></div>'.repeat(validRating);
 }
 
-// Función para crear el HTML de un producto en la lista
+/**
+ * Factory para crear elementos HTML de tarjetas de producto
+ * Implementa Single Responsibility: Solo se encarga de generar HTML de tarjetas
+ * Implementa Open/Closed: Extensible para nuevos tipos de tarjetas sin modificar código existente
+ * 
+ * @param {Object} product - Objeto producto con propiedades {id, name, price, originalPrice, image, hasDiscount, rating, buttonText, description, stock}
+ * @returns {string} HTML de la tarjeta del producto
+ */
 function createProductCard(product) {
-    const discountBadge = product.hasDiscount ? 
-        '<div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>' : '';
-    
-    const stockBadge = product.stock === 0 ? 
-        '<div class="badge bg-danger text-white position-absolute" style="top: 0.5rem; left: 0.5rem">Sin Stock</div>' : '';
-    
-    const ratingSection = product.rating ? 
-        `<div class="d-flex justify-content-center small text-warning mb-2">
-            ${generateStars(product.rating)}
-        </div>` : '';
-    
-    const priceSection = product.hasDiscount ? 
-        `<span class="text-muted text-decoration-line-through">$${product.originalPrice.toFixed(2)}</span>
-         $${product.price.toFixed(2)}` : 
-        `$${product.price.toFixed(2)}`;
-
-    const isOutOfStock = product.stock === 0;
-    const cardClass = isOutOfStock ? 'card h-100 out-of-stock' : 'card h-100';
-    const imageClass = isOutOfStock ? 'card-img-top out-of-stock-img' : 'card-img-top';
+    const badges = generateProductBadges(product);
+    const ratingSection = generateRatingSection(product.rating);
+    const priceSection = generatePriceSection(product);
+    const cardClasses = generateCardClasses(product);
+    const actionButton = generateActionButton(product);
 
     return `
         <div class="col mb-5">
-            <div class="${cardClass}" style="cursor: pointer;" onclick="viewProduct(${product.id})">
-                ${discountBadge}
-                ${stockBadge}
-                <!-- Product image-->
-                <img class="${imageClass}" src="${product.image}" alt="${product.name}" style="cursor: pointer;" />
-                <!-- Product details-->
+            <div class="${cardClasses.main}" style="cursor: pointer;" onclick="viewProduct(${product.id})">
+                ${badges}
+                <img class="${cardClasses.image}" src="${product.image}" alt="${product.name}" style="cursor: pointer;" />
                 <div class="card-body p-4">
                     <div class="text-center">
-                        <!-- Product name-->
                         <h5 class="fw-bolder" style="cursor: pointer;">${product.name}</h5>
                         ${ratingSection}
-                        <!-- Product price-->
                         ${priceSection}
-                        ${isOutOfStock ? '<p class="text-danger mt-2 mb-0"><small>No disponible</small></p>' : ''}
+                        ${product.stock === 0 ? '<p class="text-danger mt-2 mb-0"><small>No disponible</small></p>' : ''}
                     </div>
                 </div>
-                <!-- Product actions-->
                 <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
                     <div class="text-center">
-                        ${product.buttonText === "View options" ? 
-                            `<a class="btn btn-outline-dark mt-auto" href="#" onclick="event.stopPropagation(); viewProduct(${product.id})">Ver detalle</a>` :
-                            isOutOfStock ? 
-                                `<a class="btn btn-outline-secondary mt-auto" href="#" onclick="event.stopPropagation(); viewProduct(${product.id})">Ver detalle</a>` :
-                                `<a class="btn btn-outline-dark mt-auto" href="#" onclick="event.stopPropagation(); addToCartFromMain(${product.id})">${product.buttonText}</a>`
-                        }
+                        ${actionButton}
                     </div>
                 </div>
             </div>
@@ -115,99 +150,472 @@ function createProductCard(product) {
     `;
 }
 
-// Función para renderizar todos los productos
+/**
+ * Genera las insignias (badges) del producto
+ * Implementa Single Responsibility: Solo maneja la generación de badges
+ * 
+ * @param {Object} product - Objeto producto
+ * @returns {string} HTML de las insignias
+ */
+function generateProductBadges(product) {
+    const discountBadge = product.hasDiscount ? 
+        '<div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>' : '';
+    
+    const stockBadge = product.stock === 0 ? 
+        '<div class="badge bg-danger text-white position-absolute" style="top: 0.5rem; left: 0.5rem">Sin Stock</div>' : '';
+    
+    return discountBadge + stockBadge;
+}
+
+/**
+ * Genera la sección de calificación con estrellas
+ * Implementa Single Responsibility: Solo maneja la generación de rating
+ * 
+ * @param {number} rating - Calificación del producto (1-5)
+ * @returns {string} HTML de la sección de rating
+ */
+function generateRatingSection(rating) {
+    return rating ? 
+        `<div class="d-flex justify-content-center small text-warning mb-2">
+             ${generateStars(rating)}
+         </div>` : '';
+}
+
+/**
+ * Genera la sección de precios con descuentos
+ * Implementa Single Responsibility: Solo maneja la generación de precios
+ * 
+ * @param {Object} product - Objeto producto con propiedades de precio
+ * @returns {string} HTML de la sección de precios
+ */
+function generatePriceSection(product) {
+    return product.hasDiscount ? 
+        `<span class="text-muted text-decoration-line-through">$${(product.originalPrice || 0).toFixed(2)}</span>
+         $${(product.price || 0).toFixed(2)}` : 
+        `$${(product.price || 0).toFixed(2)}`;
+}
+
+/**
+ * Genera las clases CSS para la tarjeta según el estado del producto
+ * Implementa Single Responsibility: Solo maneja las clases CSS
+ * 
+ * @param {Object} product - Objeto producto
+ * @returns {Object} Objeto con clases CSS {main, image}
+ */
+function generateCardClasses(product) {
+    const isOutOfStock = product.stock === 0;
+    return {
+        main: isOutOfStock ? 'card h-100 out-of-stock' : 'card h-100',
+        image: isOutOfStock ? 'card-img-top out-of-stock-img' : 'card-img-top'
+    };
+}
+
+/**
+ * Genera el botón de acción según el estado del producto
+ * Implementa Single Responsibility: Solo maneja la generación del botón de acción
+ * 
+ * @param {Object} product - Objeto producto
+ * @returns {string} HTML del botón de acción
+ */
+function generateActionButton(product) {
+    const isOutOfStock = product.stock === 0;
+    
+    if (product.buttonText === "View options") {
+        return `<a class="btn btn-outline-dark mt-auto" href="#" onclick="event.stopPropagation(); viewProduct(${product.id})">Ver detalle</a>`;
+    }
+    
+    if (isOutOfStock) {
+        return `<a class="btn btn-outline-secondary mt-auto" href="#" onclick="event.stopPropagation(); viewProduct(${product.id})">Ver detalle</a>`;
+    }
+    
+    return `<a class="btn btn-outline-dark mt-auto" href="#" onclick="event.stopPropagation(); addToCartFromMain(${product.id})">${product.buttonText}</a>`;
+}
+
+/**
+ * Renderizador principal para la lista de productos
+ * Implementa Single Responsibility: Solo maneja el renderizado de la lista
+ * Implementa Dependency Inversion: Depende de abstracciones (createProductCard) no de implementaciones concretas
+ * 
+ * @returns {void}
+ */
 function renderProducts() {
-    const container = document.getElementById('products-container');
-    if (!container) {
-        console.log('Contenedor de productos no encontrado - probablemente estamos en página de detalle');
+    const container = getProductsContainer();
+    if (!container) return;
+    
+    if (products.length === 0) {
+        renderEmptyState(container);
         return;
     }
     
-    let productsHTML = '';
-    products.forEach(product => {
-        productsHTML += createProductCard(product);
-    });
+    renderProductsList(container);
+}
+
+/**
+ * Obtiene el contenedor de productos de forma segura
+ * Implementa Single Responsibility: Solo maneja la obtención del contenedor
+ * 
+ * @returns {HTMLElement|null} Contenedor de productos o null si no existe
+ */
+function getProductsContainer() {
+    const container = document.getElementById('products-container');
+    if (!container) {
+        // Silencioso: No es un error, simplemente no estamos en la página de productos
+        return null;
+    }
+    return container;
+}
+
+/**
+ * Renderiza el estado vacío cuando no hay productos
+ * Implementa Single Responsibility: Solo maneja el estado vacío
+ * 
+ * @param {HTMLElement} container - Contenedor donde renderizar
+ * @returns {void}
+ */
+function renderEmptyState(container) {
+    container.innerHTML = `
+        <div class="col-12 text-center py-5">
+            <h3>No hay productos disponibles</h3>
+            <p class="text-muted">Los productos se están cargando desde la base de datos...</p>
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+        </div>
+    `;
+}
+
+/**
+ * Renderiza la lista completa de productos
+ * Implementa Single Responsibility: Solo maneja el renderizado de la lista
+ * 
+ * @param {HTMLElement} container - Contenedor donde renderizar
+ * @returns {void}
+ */
+function renderProductsList(container) {
+    const productsHTML = products
+        .map(product => createProductCard(product))
+        .join('');
     
     container.innerHTML = productsHTML;
 }
 
-// Función para ver el detalle de un producto
+/**
+ * Navegador a la página de detalle del producto
+ * Implementa Single Responsibility: Solo maneja la navegación
+ * 
+ * @param {number} productId - ID del producto a visualizar
+ * @returns {void}
+ */
 function viewProduct(productId) {
     window.location.href = `/item_detail?id=${productId}`;
 }
 
-// Función para renderizar el detalle del producto
+/**
+ * Servicio para obtener un producto específico por ID desde la API
+ * Implementa el patrón Repository para acceso a datos individuales
+ * Implementa Single Responsibility: Solo maneja la obtención de productos individuales
+ * 
+ * @param {number} productId - ID del producto a obtener
+ * @returns {Promise<Object|null>} Producto mapeado al formato del frontend o null si hay error
+ */
+async function getProductById(productId) {
+    try {
+        const response = await fetch(`/api/productos/${productId}`);
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
+        
+        const productoDB = await response.json();
+        return mapProductFromAPI(productoDB);
+    } catch (error) {
+        console.error('Error obteniendo producto desde la API:', error);
+        return null;
+    }
+}
+
+/**
+ * Mapea un producto de la API al formato del frontend
+ * Implementa Single Responsibility: Solo maneja el mapeo de datos
+ * 
+ * @param {Object} productoDB - Producto desde la API
+ * @returns {Object} Producto en formato del frontend
+ */
+function mapProductFromAPI(productoDB) {
+    return {
+        id: productoDB.productoId,
+        name: productoDB.nombre || "Producto sin nombre",
+        price: parseFloat(productoDB.precio) || 0,
+        originalPrice: productoDB.precioOriginal ? parseFloat(productoDB.precioOriginal) : null,
+        image: productoDB.imagen || "https://images.unsplash.com/photo-1586370434639-0fe43b2d32d6?w=450&h=300&fit=crop",
+        hasDiscount: productoDB.hayDescuento || false,
+        rating: parseInt(productoDB.rating) || 5,
+        buttonText: (productoDB.stock > 0) ? "Add to cart" : "View options",
+        description: productoDB.descripcion || "Descripción no disponible",
+        category: "Productos",
+        stock: parseInt(productoDB.stock) || 0
+    };
+}
+
+/**
+ * Controlador principal para renderizar el detalle del producto
+ * Implementa Single Responsibility: Solo coordina el renderizado de detalles
+ * Implementa Strategy Pattern: Diferentes estrategias para obtener el producto
+ * 
+ * @returns {void}
+ */
 function renderProductDetail() {
     const productId = parseInt(getUrlParameter('id'));
-    const container = document.getElementById('product-detail-container');
+    const container = getProductDetailContainer();
     
-    if (!container) {
-        console.log('Contenedor de detalle no encontrado - probablemente estamos en página principal');
-        return;
-    }
+    if (!container) return;
     
     if (!productId) {
-        container.innerHTML = '<div class="text-center"><h2>Producto no encontrado</h2><a href="/" class="btn btn-primary">Volver al inicio</a></div>';
+        renderProductNotFound(container);
         return;
     }
 
-    const product = products.find(p => p.id === productId);
-    if (!product) {
-        container.innerHTML = '<div class="text-center"><h2>Producto no encontrado</h2><a href="/" class="btn btn-primary">Volver al inicio</a></div>';
+    // Strategy 1: Buscar en cache local
+    const cachedProduct = findProductInCache(productId);
+    if (cachedProduct) {
+        renderProductDetailHTML(cachedProduct, container);
         return;
     }
-
-    // Actualizar el título de la página
-    document.title = `${product.name} - La Bodega de Ana`;
-
-    const discountBadge = product.hasDiscount ? 
-        '<span class="badge bg-danger me-2">En Oferta</span>' : '';
     
-    const ratingSection = product.rating ? 
+    // Strategy 2: Cargar desde API
+    loadAndRenderProductFromAPI(productId, container);
+}
+
+/**
+ * Obtiene el contenedor de detalle de producto de forma segura
+ * Implementa Single Responsibility: Solo maneja la obtención del contenedor
+ * 
+ * @returns {HTMLElement|null} Contenedor de detalle o null si no existe
+ */
+function getProductDetailContainer() {
+    const container = document.getElementById('product-detail-container');
+    if (!container) {
+        // Silencioso: No es un error, simplemente no estamos en la página de detalle
+        return null;
+    }
+    return container;
+}
+
+/**
+ * Busca un producto en el cache local (array products)
+ * Implementa Single Responsibility: Solo maneja la búsqueda en cache
+ * 
+ * @param {number} productId - ID del producto a buscar
+ * @returns {Object|null} Producto encontrado o null
+ */
+function findProductInCache(productId) {
+    return products.find(p => p.id === productId);
+}
+
+/**
+ * Carga un producto desde la API y lo renderiza
+ * Implementa Single Responsibility: Solo maneja la carga y renderizado desde API
+ * 
+ * @param {number} productId - ID del producto a cargar
+ * @param {HTMLElement} container - Contenedor donde renderizar
+ * @returns {void}
+ */
+function loadAndRenderProductFromAPI(productId, container) {
+    getProductById(productId).then(apiProduct => {
+        if (apiProduct) {
+            renderProductDetailHTML(apiProduct, container);
+        } else {
+            renderProductNotFound(container);
+        }
+    });
+}
+
+/**
+ * Renderiza el estado de producto no encontrado
+ * Implementa Single Responsibility: Solo maneja el estado de error
+ * 
+ * @param {HTMLElement} container - Contenedor donde renderizar
+ * @returns {void}
+ */
+function renderProductNotFound(container) {
+    container.innerHTML = '<div class="text-center"><h2>Producto no encontrado</h2><a href="/" class="btn btn-primary">Volver al inicio</a></div>';
+}
+
+/**
+ * Factory para crear el HTML completo del detalle del producto
+ * Implementa Single Responsibility: Solo maneja la generación del HTML de detalle
+ * Implementa Template Method: Estructura fija con componentes variables
+ * 
+ * @param {Object} product - Objeto producto con todas sus propiedades
+ * @param {HTMLElement} container - Contenedor donde renderizar el HTML
+ * @returns {void}
+ */
+function renderProductDetailHTML(product, container) {
+    updatePageTitle(product.name);
+    
+    const detailSections = generateDetailSections(product);
+    const stockInfo = generateStockInfo(product);
+    const actionSection = generateDetailActionSection(product);
+    
+    const productDetailHTML = createDetailHTML(product, detailSections, stockInfo, actionSection);
+    container.innerHTML = productDetailHTML;
+}
+
+/**
+ * Actualiza el título de la página con el nombre del producto
+ * Implementa Single Responsibility: Solo maneja la actualización del título
+ * 
+ * @param {string} productName - Nombre del producto
+ * @returns {void}
+ */
+function updatePageTitle(productName) {
+    document.title = `${productName} - La Bodega de Ana`;
+}
+
+/**
+ * Genera todas las secciones del detalle del producto
+ * Implementa Single Responsibility: Solo coordina la generación de secciones
+ * 
+ * @param {Object} product - Objeto producto
+ * @returns {Object} Objeto con todas las secciones generadas
+ */
+function generateDetailSections(product) {
+    return {
+        discountBadge: generateDetailDiscountBadge(product.hasDiscount),
+        ratingSection: generateDetailRatingSection(product.rating),
+        priceSection: generateDetailPriceSection(product),
+        detailsSection: generateDetailDetailsSection(product.details)
+    };
+}
+
+/**
+ * Genera la insignia de descuento para el detalle
+ * Implementa Single Responsibility: Solo maneja la insignia de descuento
+ * 
+ * @param {boolean} hasDiscount - Si el producto tiene descuento
+ * @returns {string} HTML de la insignia de descuento
+ */
+function generateDetailDiscountBadge(hasDiscount) {
+    return hasDiscount ? 
+        '<span class="badge bg-danger me-2">En Oferta</span>' : '';
+}
+
+/**
+ * Genera la sección de rating para el detalle
+ * Implementa Single Responsibility: Solo maneja la sección de rating
+ * 
+ * @param {number} rating - Calificación del producto
+ * @returns {string} HTML de la sección de rating
+ */
+function generateDetailRatingSection(rating) {
+    return rating ? 
         `<div class="d-flex align-items-center mb-3">
             <div class="d-flex text-warning me-2">
-                ${generateStars(product.rating)}
+                ${generateStars(rating)}
             </div>
-            <span class="text-muted">(${product.rating}.0)</span>
+            <span class="text-muted">(${rating}.0)</span>
         </div>` : '';
-    
-    const priceSection = product.hasDiscount ? 
-        `<div class="mb-3">
-            <span class="text-muted text-decoration-line-through fs-5 me-2">$${product.originalPrice.toFixed(2)}</span>
-            <span class="fs-3 fw-bold text-success">$${product.price.toFixed(2)}</span>
-            <span class="badge bg-success ms-2">${Math.round((1 - product.price/product.originalPrice) * 100)}% OFF</span>
-        </div>` : 
-        `<div class="mb-3">
-            <span class="fs-3 fw-bold">$${product.price.toFixed(2)}</span>
-        </div>`;
+}
 
-    const detailsSection = product.details ? 
-        `<div class="row mt-4">
+/**
+ * Genera la sección de precios para el detalle
+ * Implementa Single Responsibility: Solo maneja la sección de precios
+ * 
+ * @param {Object} product - Objeto producto con propiedades de precio
+ * @returns {string} HTML de la sección de precios
+ */
+function generateDetailPriceSection(product) {
+    if (product.hasDiscount) {
+        const discountPercentage = Math.round((1 - product.price/product.originalPrice) * 100);
+        return `
+            <div class="mb-3">
+                <span class="text-muted text-decoration-line-through fs-5 me-2">$${(product.originalPrice || 0).toFixed(2)}</span>
+                <span class="fs-3 fw-bold text-success">$${(product.price || 0).toFixed(2)}</span>
+                <span class="badge bg-success ms-2">${discountPercentage}% OFF</span>
+            </div>`;
+    }
+    
+    return `
+        <div class="mb-3">
+            <span class="fs-3 fw-bold">$${(product.price || 0).toFixed(2)}</span>
+        </div>`;
+}
+
+/**
+ * Genera la sección de detalles adicionales
+ * Implementa Single Responsibility: Solo maneja la sección de detalles
+ * 
+ * @param {Object} details - Objeto con detalles adicionales del producto
+ * @returns {string} HTML de la sección de detalles
+ */
+function generateDetailDetailsSection(details) {
+    if (!details) return '';
+    
+    const detailsList = Object.entries(details)
+        .map(([key, value]) => `<li><strong>${key}:</strong> ${value}</li>`)
+        .join('');
+    
+    return `
+        <div class="row mt-4">
             <div class="col-12">
                 <h6 class="fw-bold">Especificaciones:</h6>
                 <ul class="list-unstyled">
-                    ${Object.entries(product.details).map(([key, value]) => 
-                        `<li><strong>${key}:</strong> ${value}</li>`
-                    ).join('')}
+                    ${detailsList}
                 </ul>
             </div>
-        </div>` : '';
-
-    const isOutOfStock = product.stock === 0;
-    const stockClass = isOutOfStock ? 'out-of-stock-detail' : '';
-    const imageClass = isOutOfStock ? 'card-img-top mb-5 mb-md-0 out-of-stock-img-detail' : 'card-img-top mb-5 mb-md-0';
-    
-    const stockSection = isOutOfStock ? 
-        `<div class="d-flex align-items-center mb-4">
-            <span class="me-3 text-danger"><strong>Stock:</strong> Sin stock disponible</span>
-            <span class="badge bg-danger">No disponible</span>
-        </div>` :
-        `<div class="d-flex align-items-center mb-4">
-            <span class="me-3"><strong>Stock:</strong> ${product.stock || 0} disponibles</span>
         </div>`;
+}
 
-    const actionSection = isOutOfStock ? 
-        `<div class="d-flex align-items-center mb-4">
+/**
+ * Genera la información de stock del producto
+ * Implementa Single Responsibility: Solo maneja la información de stock
+ * 
+ * @param {Object} product - Objeto producto
+ * @returns {Object} Objeto con clases CSS y sección de stock
+ */
+function generateStockInfo(product) {
+    const isOutOfStock = product.stock === 0;
+    
+    return {
+        stockClass: isOutOfStock ? 'out-of-stock-detail' : '',
+        imageClass: isOutOfStock ? 'card-img-top mb-5 mb-md-0 out-of-stock-img-detail' : 'card-img-top mb-5 mb-md-0',
+        stockSection: isOutOfStock ? 
+            `<div class="d-flex align-items-center mb-4">
+                <span class="me-3 text-danger"><strong>Stock:</strong> Sin stock disponible</span>
+                <span class="badge bg-danger">No disponible</span>
+            </div>` :
+            `<div class="d-flex align-items-center mb-4">
+                <span class="me-3"><strong>Stock:</strong> ${product.stock || 0} disponibles</span>
+            </div>`
+    };
+}
+
+/**
+ * Genera la sección de acciones para el detalle del producto
+ * Implementa Single Responsibility: Solo maneja la sección de acciones
+ * 
+ * @param {Object} product - Objeto producto
+ * @returns {string} HTML de la sección de acciones
+ */
+function generateDetailActionSection(product) {
+    const isOutOfStock = product.stock === 0;
+    
+    if (isOutOfStock) {
+        return generateOutOfStockActions(product.id);
+    }
+    
+    return generateInStockActions(product.id, product.stock);
+}
+
+/**
+ * Genera las acciones para productos sin stock
+ * Implementa Single Responsibility: Solo maneja acciones de productos sin stock
+ * 
+ * @param {number} productId - ID del producto
+ * @returns {string} HTML de las acciones sin stock
+ */
+function generateOutOfStockActions(productId) {
+    return `
+        <div class="d-flex align-items-center mb-4">
             <div class="alert alert-warning" role="alert">
                 <i class="bi-exclamation-triangle me-2"></i>
                 Este producto no está disponible actualmente. Puedes contactarnos para más información.
@@ -218,108 +626,245 @@ function renderProductDetail() {
                 <i class="bi-cart-fill me-1"></i>
                 Sin stock
             </button>
-            <button class="btn btn-outline-info flex-shrink-0" type="button" onclick="contactForProduct(${product.id})">
+            <button class="btn btn-outline-info flex-shrink-0" type="button" onclick="contactForProduct(${productId})">
                 <i class="bi-envelope me-1"></i>
                 Consultar disponibilidad
             </button>
-        </div>` :
-        `<div class="d-flex">
-            <input class="form-control text-center me-3" id="inputQuantity" type="number" value="1" min="1" max="${product.stock || 1}" style="max-width: 5rem" />
-            <button class="btn btn-outline-dark flex-shrink-0" type="button" onclick="addToCartFromDetail(${product.id})">
+        </div>`;
+}
+
+/**
+ * Genera las acciones para productos con stock
+ * Implementa Single Responsibility: Solo maneja acciones de productos con stock
+ * 
+ * @param {number} productId - ID del producto
+ * @param {number} stock - Cantidad disponible en stock
+ * @returns {string} HTML de las acciones con stock
+ */
+function generateInStockActions(productId, stock) {
+    return `
+        <div class="d-flex">
+            <input class="form-control text-center me-3" id="inputQuantity" type="number" value="1" min="1" max="${stock || 1}" style="max-width: 5rem" />
+            <button class="btn btn-outline-dark flex-shrink-0" type="button" onclick="addToCartFromDetail(${productId})">
                 <i class="bi-cart-fill me-1"></i>
                 Agregar al carrito
             </button>
         </div>`;
+}
 
-    const productDetailHTML = `
-        <div class="row gx-4 gx-lg-5 align-items-center ${stockClass}">
+/**
+ * Crea el HTML completo del detalle del producto
+ * Implementa Single Responsibility: Solo ensambla el HTML final
+ * 
+ * @param {Object} product - Objeto producto
+ * @param {Object} detailSections - Secciones del detalle
+ * @param {Object} stockInfo - Información de stock
+ * @param {string} actionSection - Sección de acciones
+ * @returns {string} HTML completo del detalle
+ */
+function createDetailHTML(product, detailSections, stockInfo, actionSection) {
+    return `
+        <div class="row gx-4 gx-lg-5 align-items-center ${stockInfo.stockClass}">
             <div class="col-md-6">
-                <img class="${imageClass}" src="${product.image}" alt="${product.name}" />
+                <img class="${stockInfo.imageClass}" src="${product.image}" alt="${product.name}" />
             </div>
             <div class="col-md-6">
                 <div class="small mb-1">${product.category || 'Categoría'}</div>
                 <h1 class="display-5 fw-bolder">${product.name}</h1>
-                ${discountBadge}
-                ${ratingSection}
-                ${priceSection}
+                ${detailSections.discountBadge}
+                ${detailSections.ratingSection}
+                ${detailSections.priceSection}
                 <p class="lead">${product.description || 'Descripción del producto no disponible.'}</p>
-                ${stockSection}
+                ${stockInfo.stockSection}
                 ${actionSection}
-                ${detailsSection}
+                ${detailSections.detailsSection}
                 <div class="mt-4">
-                    <a href="index.html" class="btn btn-secondary">
+                    <a href="/" class="btn btn-secondary">
                         <i class="bi-arrow-left me-1"></i>
                         Volver a la tienda
                     </a>
                 </div>
             </div>
-        </div>
-    `;
-
-    container.innerHTML = productDetailHTML;
+        </div>`;
 }
 
-// Función para agregar al carrito desde la página de detalle
+/**
+ * Controlador para agregar productos al carrito desde la página de detalle
+ * Implementa Single Responsibility: Solo maneja la lógica de agregar al carrito desde detalle
+ * Implementa Liskov Substitution: Compatible con el sistema de carrito existente
+ * 
+ * @param {number} productId - ID del producto a agregar
+ * @returns {void}
+ */
 function addToCartFromDetail(productId) {
-    const quantityInput = document.getElementById('inputQuantity');
-    const quantity = parseInt(quantityInput.value) || 1;
+    const quantityInput = getQuantityInput();
+    const quantity = validateQuantity(quantityInput);
     
-    // Validar que la cantidad sea válida
+    if (!quantity) return;
+    
+    const product = findProductInCache(productId);
+    if (!validateStock(product, quantity, quantityInput)) return;
+    
+    addToCart(productId, quantity);
+    resetQuantityInput(quantityInput);
+}
+
+/**
+ * Obtiene el input de cantidad de forma segura
+ * Implementa Single Responsibility: Solo maneja la obtención del input
+ * 
+ * @returns {HTMLElement|null} Input de cantidad o null si no existe
+ */
+function getQuantityInput() {
+    return document.getElementById('inputQuantity');
+}
+
+/**
+ * Valida y parsea la cantidad del input
+ * Implementa Single Responsibility: Solo maneja la validación de cantidad
+ * 
+ * @param {HTMLElement} quantityInput - Input de cantidad
+ * @returns {number|null} Cantidad válida o null si es inválida
+ */
+function validateQuantity(quantityInput) {
+    const quantity = parseInt(quantityInput?.value) || 1;
+    
     if (quantity < 1) {
         alert('La cantidad debe ser mayor a 0');
-        return;
+        return null;
     }
     
-    // Obtener el producto para validar stock
-    const product = products.find(p => p.id === productId);
+    return quantity;
+}
+
+/**
+ * Valida que la cantidad no exceda el stock disponible
+ * Implementa Single Responsibility: Solo maneja la validación de stock
+ * 
+ * @param {Object} product - Producto a validar
+ * @param {number} quantity - Cantidad solicitada
+ * @param {HTMLElement} quantityInput - Input para corregir la cantidad
+ * @returns {boolean} true si es válida, false si no
+ */
+function validateStock(product, quantity, quantityInput) {
     if (product && quantity > product.stock) {
         alert(`Solo hay ${product.stock} unidades disponibles de este producto.`);
         quantityInput.value = product.stock;
-        return;
+        return false;
     }
-    
-    addToCart(productId, quantity);
-    
-    // Resetear el input de cantidad a 1 después de agregar
-    quantityInput.value = 1;
+    return true;
 }
 
-// Función para contactar sobre un producto sin stock
+/**
+ * Resetea el input de cantidad a 1
+ * Implementa Single Responsibility: Solo maneja el reseteo del input
+ * 
+ * @param {HTMLElement} quantityInput - Input a resetear
+ * @returns {void}
+ */
+function resetQuantityInput(quantityInput) {
+    if (quantityInput) {
+        quantityInput.value = 1;
+    }
+}
+
+/**
+ * Servicio para contactar sobre productos sin stock
+ * Implementa Single Responsibility: Solo maneja el contacto sobre productos
+ * 
+ * @param {number} productId - ID del producto sobre el que consultar
+ * @returns {void}
+ */
 function contactForProduct(productId) {
-    const product = products.find(p => p.id === productId);
+    const product = findProductInCache(productId);
     if (product) {
-        alert(`Has solicitado información sobre: ${product.name}\n\nTe contactaremos pronto para informarte sobre la disponibilidad de este producto.`);
+        const message = `Has solicitado información sobre: ${product.name}\n\nTe contactaremos pronto para informarte sobre la disponibilidad de este producto.`;
+        alert(message);
     }
 }
 
-// Función para agregar al carrito (para la página principal)
+/**
+ * Controlador para agregar productos al carrito desde la página principal
+ * Implementa Single Responsibility: Solo maneja la lógica de agregar al carrito desde lista
+ * 
+ * @param {number} productId - ID del producto a agregar
+ * @returns {void}
+ */
 function addToCartFromMain(productId) {
     addToCart(productId, 1);
 }
 
-// Función para actualizar el contador del carrito (deprecated - usar la del cart.js)
+/**
+ * Función legacy para compatibilidad con el sistema de carrito existente
+ * Implementa Interface Segregation: Mantiene compatibilidad sin afectar funcionalidad
+ * 
+ * @param {number} quantity - Cantidad (deprecated)
+ * @returns {void}
+ */
 function updateCartCounter(quantity = 1) {
     // Esta función ahora está manejada por cart.js
-    // Se mantiene por compatibilidad
+    // Se mantiene por compatibilidad con código legacy
 }
 
-// Inicializar cuando el DOM esté cargado
+/**
+ * Inicializador principal de la aplicación
+ * Implementa Single Responsibility: Solo coordina la inicialización
+ * Implementa Dependency Injection: Inyecta dependencias del sistema de carrito
+ * 
+ * @returns {void}
+ */
 document.addEventListener('DOMContentLoaded', async function() {
+    await initializeApplication();
+});
+
+/**
+ * Inicializa todos los componentes de la aplicación
+ * Implementa Single Responsibility: Solo maneja la inicialización completa
+ * 
+ * @returns {Promise<void>}
+ */
+async function initializeApplication() {
     await loadProducts();
-    
-    // Inicializar el carrito después de cargar los productos
+    initializeCartSystem();
+    renderCurrentPage();
+}
+
+/**
+ * Inicializa el sistema de carrito de forma compatible
+ * Implementa Interface Segregation: Maneja diferentes implementaciones de carrito
+ * 
+ * @returns {void}
+ */
+function initializeCartSystem() {
     if (typeof initializeCart === 'function') {
         initializeCart();
     } else if (typeof window.refreshCartCounter === 'function') {
         window.refreshCartCounter();
     }
-    
-    // Verificar si estamos en la página de detalle
-    const isDetailPage = window.location.pathname.includes('item_detail');
+}
+
+/**
+ * Renderiza la página actual según la ruta
+ * Implementa Strategy Pattern: Diferentes estrategias según el tipo de página
+ * 
+ * @returns {void}
+ */
+function renderCurrentPage() {
+    const isDetailPage = isProductDetailPage();
     
     if (isDetailPage) {
         renderProductDetail();
     } else {
         renderProducts();
     }
-});
+}
+
+/**
+ * Determina si estamos en la página de detalle del producto
+ * Implementa Single Responsibility: Solo determina el tipo de página
+ * 
+ * @returns {boolean} true si estamos en página de detalle
+ */
+function isProductDetailPage() {
+    return window.location.pathname.includes('item_detail');
+}

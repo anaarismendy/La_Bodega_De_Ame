@@ -239,32 +239,158 @@ function updateCartCounter() {
     }
 }
 
-// Función para proceder al checkout
+/**
+ * Función para proceder al checkout - ahora abre el modal de cliente
+ * Implementa el patrón Strategy para manejar diferentes flujos de checkout
+ */
 function proceedToCheckout() {
     if (cart.length === 0) {
         alert('Tu carrito está vacío');
         return;
     }
     
-    const originalSubtotal = cart.reduce((sum, item) => {
-        const originalPrice = item.originalPrice || item.price;
-        return sum + (originalPrice * item.quantity);
-    }, 0);
-    
-    const finalSubtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const totalDiscount = originalSubtotal - finalSubtotal;
-    
-    let message = `Procediendo al pago...\n\n`;
-    message += `Subtotal: $${originalSubtotal.toFixed(2)}\n`;
-    
-    if (totalDiscount > 0) {
-        message += `Descuento: -$${totalDiscount.toFixed(2)}\n`;
+    // Abrir el modal de información del cliente
+    const customerModal = new bootstrap.Modal(document.getElementById('customerModal'));
+    customerModal.show();
+}
+
+/**
+ * Función para guardar el cliente y luego el carrito
+ * Implementa el patrón Chain of Responsibility: Cliente → Carrito
+ */
+async function saveCustomerAndCart() {
+    try {
+        // Mostrar loading en el botón
+        const saveBtn = document.getElementById('saveCustomerBtn');
+        const originalText = saveBtn.innerHTML;
+        saveBtn.innerHTML = '<i class="bi-arrow-clockwise spin me-1"></i>Guardando...';
+        saveBtn.disabled = true;
+        
+        // Obtener datos del formulario
+        const formData = getCustomerFormData();
+        
+        // Validar cédula
+        if (!formData.clienteId || formData.clienteId.length < 8) {
+            showNotification('La cédula debe tener al menos 8 caracteres', 'error');
+            return;
+        }
+        
+        // Guardar cliente en la base de datos
+        const clienteResponse = await fetch('/api/clientes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        if (!clienteResponse.ok) {
+            if (clienteResponse.status === 400) {
+                showNotification('Error: La cédula ya existe o tiene un formato inválido', 'error');
+                return;
+            }
+            throw new Error(`Error guardando cliente: ${clienteResponse.status}`);
+        }
+        
+        const clienteGuardado = await clienteResponse.json();
+        showNotification(`Cliente ${clienteGuardado.nombre} ${clienteGuardado.primerApellido} guardado exitosamente`, 'success');
+        
+        // Ahora guardar el carrito con el ID del cliente recién creado
+        await saveCartWithClientId(clienteGuardado.clienteId);
+        
+        // Cerrar el modal
+        const customerModal = bootstrap.Modal.getInstance(document.getElementById('customerModal'));
+        customerModal.hide();
+        
+        // Resetear el formulario
+        document.getElementById('customerForm').reset();
+        
+    } catch (error) {
+        console.error('Error en el proceso de checkout:', error);
+        showNotification('Error al procesar la información. Inténtalo de nuevo.', 'error');
+    } finally {
+        // Restaurar el botón
+        const saveBtn = document.getElementById('saveCustomerBtn');
+        saveBtn.innerHTML = '<i class="bi-check-circle me-1"></i>Guardar y Proceder al Pago';
+        saveBtn.disabled = false;
     }
-    
-    message += `Total: $${finalSubtotal.toFixed(2)}\n\n`;
-    message += `(Esta es una simulación)`;
-    
-    alert(message);
+}
+
+/**
+ * Obtiene los datos del formulario de cliente
+ * Implementa Single Responsibility: Solo maneja la extracción de datos del formulario
+ * 
+ * @returns {Object} Objeto con los datos del cliente
+ */
+function getCustomerFormData() {
+    return {
+        clienteId: document.getElementById('clienteId').value.trim(), // Cédula del cliente
+        nombre: document.getElementById('nombre').value.trim(),
+        primerApellido: document.getElementById('primerApellido').value.trim(),
+        segundoApellido: document.getElementById('segundoApellido').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        telefono: document.getElementById('telefono').value ? parseInt(document.getElementById('telefono').value) : null,
+        direccion: document.getElementById('direccion').value.trim(),
+        fechaNacimiento: document.getElementById('fechaNacimiento').value || null,
+        estado: 'activo'
+    };
+}
+
+/**
+ * Guarda el carrito en la base de datos con el ID del cliente especificado
+ * Implementa Single Responsibility: Solo maneja el guardado del carrito
+ * 
+ * @param {string} clienteId ID del cliente
+ * @returns {Promise<void>}
+ */
+async function saveCartWithClientId(clienteId) {
+    try {
+        // Convertir el carrito del frontend al formato del backend
+        const carritoItems = cart.map(item => ({
+            clienteId: clienteId,
+            productoId: item.id,
+            cantidad: item.quantity
+        }));
+        
+        // Enviar al backend para guardar en la base de datos
+        const response = await fetch('/api/carrito/checkout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(carritoItems)
+        });
+        
+        if (response.ok) {
+            // Éxito: Carrito guardado en la base de datos
+            showNotification('Carrito guardado exitosamente. Procediendo al pago...', 'success');
+            
+            // Limpiar el carrito local después de guardar
+            clearCartAfterCheckout();
+            
+            // TODO: Redirigir a la página de pago
+            // window.location.href = '/checkout';
+            
+        } else {
+            throw new Error(`Error del servidor: ${response.status}`);
+        }
+        
+    } catch (error) {
+        console.error('Error guardando carrito en la base de datos:', error);
+        showNotification('Error al guardar el carrito. Inténtalo de nuevo.', 'error');
+        throw error; // Re-lanzar para que se maneje en la función padre
+    }
+}
+
+/**
+ * Limpia el carrito local después de un checkout exitoso
+ * Implementa Single Responsibility: Solo maneja la limpieza del carrito local
+ */
+function clearCartAfterCheckout() {
+    cart = [];
+    localStorage.removeItem('cart');
+    updateCartCounter();
+    renderCart();
 }
 
 // Función para mostrar notificaciones
@@ -317,6 +443,54 @@ function initializeCart() {
     }
     
     updateCartCounter();
+    
+    // Inicializar el formulario de cliente
+    initializeCustomerForm();
+}
+
+/**
+ * Inicializa el formulario de cliente y sus event listeners
+ * Implementa el patrón Observer para manejar eventos del formulario
+ */
+function initializeCustomerForm() {
+    // Event listener para el formulario de cliente
+    const customerForm = document.getElementById('customerForm');
+    if (customerForm) {
+        customerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveCustomerAndCart();
+        });
+    }
+    
+    // Validación en tiempo real para la cédula
+    const cedulaInput = document.getElementById('clienteId');
+    if (cedulaInput) {
+        cedulaInput.addEventListener('input', function(e) {
+            const cedula = e.target.value.trim();
+            const feedback = document.getElementById('cedulaFeedback');
+            
+            // Crear elemento de feedback si no existe
+            if (!feedback) {
+                const feedbackElement = document.createElement('div');
+                feedbackElement.id = 'cedulaFeedback';
+                feedbackElement.className = 'form-text';
+                e.target.parentNode.appendChild(feedbackElement);
+            }
+            
+            const feedbackElement = document.getElementById('cedulaFeedback');
+            
+            if (cedula.length === 0) {
+                feedbackElement.textContent = 'Ingrese su cédula';
+                feedbackElement.className = 'form-text text-muted';
+            } else if (cedula.length < 8) {
+                feedbackElement.textContent = `Faltan ${8 - cedula.length} caracteres (mínimo 8)`;
+                feedbackElement.className = 'form-text text-warning';
+            } else {
+                feedbackElement.textContent = '✓ Formato válido';
+                feedbackElement.className = 'form-text text-success';
+            }
+        });
+    }
 }
 
 // Función global para forzar la actualización del contador

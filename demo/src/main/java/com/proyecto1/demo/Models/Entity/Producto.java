@@ -1,41 +1,58 @@
 package com.proyecto1.demo.Models.Entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "producto")
 public class Producto {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "producto_id")
+    private Long productoId;
+
+    @Column(name = "categoria_id")
+    private Integer categoriaId;
+
+    @Column(nullable = false, length = 255)
     private String nombre;
-    private Double precio;
+
+    @Column(length = 255)
     private String descripcion;
-    private Integer cantidad;
 
-    // Constructor
-    public Producto(Long id, String nombre, Double precio, String descripcion, Integer cantidad) {
-        this.id = id;
-        this.nombre = nombre;
-        this.precio = precio;
-        this.descripcion = descripcion;
-        this.cantidad = cantidad;
+    @Column(nullable = false)
+    private Double precio;
+
+    @Column(name = "precio_original")
+    private Double precioOriginal;
+
+    @Column(length = 255)
+    private String imagen;
+
+    @Column(name = "hay_descuento")
+    private Boolean hayDescuento = false;
+
+    private Double descuento;
+
+    private Integer stock;
+
+    private Integer rating;
+
+    // ====== Getters y Setters ======
+    public Long getProductoId() {
+        return productoId;
     }
 
-    public Producto() {
+    public void setProductoId(Long productoId) {
+        this.productoId = productoId;
     }
 
-    // Getters y Setters
-    public Long getId() {
-        return id;
+    public Integer getCategoriaId() {
+        return categoriaId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setCategoriaId(Integer categoriaId) {
+        this.categoriaId = categoriaId;
     }
 
     public String getNombre() {
@@ -46,6 +63,14 @@ public class Producto {
         this.nombre = nombre;
     }
 
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
     public Double getPrecio() {
         return precio;
     }
@@ -54,19 +79,57 @@ public class Producto {
         this.precio = precio;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public Double getPrecioOriginal() {
+        return precioOriginal;
     }
 
-    public Integer getCantidad() {
-        return cantidad;
+    public void setPrecioOriginal(Double precioOriginal) {
+        this.precioOriginal = precioOriginal;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public String getImagen() {
+        return imagen;
     }
 
-    public void setCantidad(Integer cantidad) {
-        this.cantidad = cantidad;
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
+    }
+
+    public Boolean getHayDescuento() {
+        return hayDescuento;
+    }
+
+    public void setHayDescuento(Boolean hayDescuento) {
+        this.hayDescuento = hayDescuento;
+    }
+
+    public Double getDescuento() {
+        return descuento;
+    }
+
+    public void setDescuento(Double descuento) {
+        this.descuento = descuento;
+    }
+
+    public Integer getStock() {
+        return stock;
+    }
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
+    }
+
+    public Integer getRating() {
+        return rating;
+    }
+
+    public void setRating(Integer rating) {
+        this.rating = rating;
+    }
+
+    // ====== Métodos auxiliares ======
+    @Transient
+    public boolean isAgotado() {
+        return stock == null || stock <= 0;
     }
 }

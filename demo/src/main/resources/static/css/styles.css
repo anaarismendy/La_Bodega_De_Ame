@@ -10824,3 +10824,94 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+
+/* Custom styles for customer modal and animations */
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Customer modal styles */
+#customerModal .modal-content {
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+#customerModal .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px 15px 0 0;
+}
+
+#customerModal .modal-header .btn-close {
+    filter: invert(1);
+}
+
+#customerModal .form-label {
+    font-weight: 600;
+    color: #495057;
+}
+
+#customerModal .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+}
+
+#customerModal .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 25px;
+    padding: 10px 30px;
+    font-weight: 600;
+}
+
+#customerModal .btn-primary:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+#customerModal .btn-secondary {
+    border-radius: 25px;
+    padding: 10px 30px;
+    font-weight: 600;
+}
+
+#customerModal .alert-info {
+    background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+    border: none;
+    border-radius: 10px;
+    color: #1565c0;
+}
+
+/* Loading state */
+#saveCustomerBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
