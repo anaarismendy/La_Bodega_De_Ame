@@ -78,7 +78,9 @@ public class ProductoRestController {
      * @return ResponseEntity con el producto actualizado, 404 si no existe, o 500
      *         si hay error
      */
-    @PutMapping("/{id}")
+
+    //TODO: REVISAR METODO DE ACTUALIZAR, FUNCIONAMIENTO CORRECTO
+    @PutMapping("/update/{id}")
     public ResponseEntity<Producto> updateProducto(@PathVariable Long id, @RequestBody Producto producto) {
         try {
             Producto productoExistente = productoDAO.findById(id);
@@ -101,7 +103,9 @@ public class ProductoRestController {
      * @return ResponseEntity 200 si se elimina correctamente, 404 si no existe, o
      *         500 si hay error
      */
-    @DeleteMapping("/{id}")
+
+     //TODO: REVISAR METODO DE ELIMINAR, FUNCIONAMIENTO CORRECTO
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteProducto(@PathVariable Long id) {
         try {
             Producto producto = productoDAO.findById(id);
