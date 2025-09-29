@@ -217,31 +217,67 @@ function generateCardClasses(product) {
  * @param {Object} product - Objeto producto
  * @returns {string} HTML del botón de acción
  */
+/**
+ * Genera los botones de acción para las cards de productos
+ * Incluye botones para agregar al carrito, editar y eliminar
+ * 
+ * @param {Object} product - Producto para generar los botones
+ * @returns {string} HTML de los botones
+ */
 function generateActionButton(product) {
     const isOutOfStock = product.stock === 0;
 
+    // Si es solo para ver opciones, mostrar solo botón de detalle
     if (product.buttonText === "View options") {
-        return `<a class="btn btn-outline-dark mt-auto" href="#" onclick="event.stopPropagation(); viewProduct(${product.id})">Ver detalle</a>`;
+        return `<a class="btn btn-outline-dark mt-auto" href="#" onclick="event.stopPropagation(); viewProduct(${product.id})">
+                    <i class="bi-eye me-1"></i>Ver detalle
+                </a>`;
     }
 
+    // Si está agotado, mostrar solo botón de detalle
     if (isOutOfStock) {
-        return `<a class="btn btn-outline-secondary mt-auto" href="#" onclick="event.stopPropagation(); viewProduct(${product.id})">Ver detalle</a>`;
+        return `<a class="btn btn-outline-secondary mt-auto" href="#" onclick="event.stopPropagation(); viewProduct(${product.id})">
+                    <i class="bi-eye me-1"></i>Ver detalle
+                </a>`;
     }
 
-    return generateCardButtons;
-
+    // Para productos disponibles, mostrar todos los botones
+    return generateCardButtons(product);
 }
 
-//TODO: REVISAR METODO DE ELIMINAR Y UPDATE, FUNCIONAMIENTO CORRECTO
-function generateCardButtons() {
-    //Crear Boton de añadir al carrito 
-    const btn = `<a class="btn btn-outline-dark mt-auto" href="#" onclick="event.stopPropagation(); addToCartFromMain(${product.id})">${product.buttonText}</a>`;
-
-    const btnEliminar = `<a class="btn btn-outline-danger mt-auto" href="#" onclick="event.stopPropagation(); RemoveProduct(${product.id})">Eliminar</a>`;
-    const btnEditar = `<a class="btn btn-outline-primary mt-auto" href="#" onclick="event.stopPropagation(); EditProduct(${product.id})">Editar</a>`;
-
-    //TODO: REVISAR RETURN, ES CORRECTO?
-    return btn + btnEliminar + btnEditar;
+/**
+ * Genera los botones completos para la gestión de productos
+ * Incluye: Agregar al carrito, Editar y Eliminar
+ * 
+ * @param {Object} product - Producto para generar los botones
+ * @returns {string} HTML de todos los botones
+ */
+function generateCardButtons(product) {
+    return `
+        <div class="d-grid gap-2">
+            <!-- Botón principal: Agregar al carrito -->
+            <a class="btn btn-success btn-sm" href="#" onclick="event.stopPropagation(); addToCartFromMain(${product.id})">
+                <i class="bi-cart-plus me-1"></i>${product.buttonText}
+            </a>
+            
+            <!-- Botones secundarios en fila -->
+            <div class="btn-group" role="group">
+                <a class="btn btn-outline-primary btn-sm" href="#" onclick="event.stopPropagation(); EditProduct(${product.id})" 
+                   title="Editar producto">
+                    <i class="bi-pencil"></i>
+                </a>
+                <a class="btn btn-outline-danger btn-sm" href="#" onclick="event.stopPropagation(); RemoveProduct(${product.id})" 
+                   title="Eliminar producto">
+                    <i class="bi-trash"></i>
+                </a>
+            </div>
+            
+            <!-- Botón de ver detalle -->
+            <a class="btn btn-outline-dark btn-sm" href="#" onclick="event.stopPropagation(); viewProduct(${product.id})">
+                <i class="bi-eye me-1"></i>Ver detalle
+            </a>
+        </div>
+    `;
 }
 
 
