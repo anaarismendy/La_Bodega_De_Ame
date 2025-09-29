@@ -4,12 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.proyecto1.demo.Models.DAO.CarritoDAO;
+import com.proyecto1.demo.Models.DAO.ClienteDAO;
+import com.proyecto1.demo.Models.DAO.ProductoDAO;
 import com.proyecto1.demo.Models.Entity.Carrito;
 import com.proyecto1.demo.Models.Entity.Cliente;
 import com.proyecto1.demo.Models.Entity.Producto;
-import com.proyecto1.demo.Models.Entity.DAO.CarritoDAO;
-import com.proyecto1.demo.Models.Entity.DAO.ClienteDAO;
-import com.proyecto1.demo.Models.Entity.DAO.ProductoDAO;
 
 import java.util.List;
 import java.util.Map;

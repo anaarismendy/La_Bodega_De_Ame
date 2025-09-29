@@ -1,7 +1,7 @@
 package com.proyecto1.demo.Controllers;
 
+import com.proyecto1.demo.Models.DAO.ProductoDAO;
 import com.proyecto1.demo.Models.Entity.Producto;
-import com.proyecto1.demo.Models.Entity.DAO.ProductoDAO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

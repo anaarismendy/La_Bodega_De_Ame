@@ -1,4 +1,4 @@
-package com.proyecto1.demo.Models.Entity.DAO;
+package com.proyecto1.demo.Models.DAO;
 
 import com.proyecto1.demo.Models.Entity.Cliente;
 import jakarta.persistence.EntityManager;
