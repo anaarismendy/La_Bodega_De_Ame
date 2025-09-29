@@ -15,7 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Entity
-@Table(name = "Factura_Detalles")
+@Table(name = "factura_detalle")
 @Data
 @AllArgsConstructor
 public class Factura_Detalles implements Serializable {
