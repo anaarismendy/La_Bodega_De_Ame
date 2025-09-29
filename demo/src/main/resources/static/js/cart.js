@@ -249,9 +249,67 @@ function proceedToCheckout() {
         return;
     }
     
+    // Mostrar resumen del carrito en el modal
+    renderCartSummaryInModal();
+    
     // Abrir el modal de información del cliente
     const customerModal = new bootstrap.Modal(document.getElementById('customerModal'));
     customerModal.show();
+}
+
+/**
+ * Renderiza el resumen del carrito dentro del modal de checkout
+ */
+function renderCartSummaryInModal() {
+    const cartSummaryContainer = document.getElementById('cartSummaryCheckout');
+    if (!cartSummaryContainer) return;
+
+    let total = 0;
+    let html = '';
+
+    cart.forEach(item => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        
+        html += `
+            <div class="col-12 cart-item">
+                <div class="row align-items-center">
+                    <div class="col-md-2">
+                        <img src="${item.image}" alt="${item.name}" class="img-fluid rounded" style="max-height: 60px; width: 60px; object-fit: cover;">
+                    </div>
+                    <div class="col-md-4">
+                        <h6 class="mb-1 text-dark">${item.name}</h6>
+                        <small class="text-muted">${item.category}</small>
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <span class="badge bg-secondary">${item.quantity}</span>
+                    </div>
+                    <div class="col-md-2 text-center">
+                        <span class="fw-bold text-success">$${itemTotal.toLocaleString()}</span>
+                    </div>
+                    <div class="col-md-2 text-end">
+                        <small class="text-muted">$${item.price.toLocaleString()} c/u</small>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    // Agregar total
+    html += `
+        <div class="col-12 mt-3 pt-3 border-top">
+            <div class="row">
+                <div class="col-8">
+                    <h5 class="mb-0 text-dark">Total de tu Compra:</h5>
+                </div>
+                <div class="col-4 text-end">
+                    <h4 class="mb-0 text-success fw-bold">$${total.toLocaleString()}</h4>
+                </div>
+            </div>
+        </div>
+    `;
+
+    cartSummaryContainer.innerHTML = html;
 }
 
 /**
@@ -304,6 +362,16 @@ async function saveCustomerAndCart() {
         
         // Resetear el formulario
         document.getElementById('customerForm').reset();
+        
+        // Limpiar el carrito después de la compra exitosa
+        cart = [];
+        updateCartDisplay();
+        updateCartBadge();
+        
+        // Redirigir a la página de factura
+        setTimeout(() => {
+            window.location.href = '/factura';
+        }, 1000);
         
     } catch (error) {
         console.error('Error en el proceso de checkout:', error);

@@ -184,72 +184,105 @@
         
         <!-- Customer Information Modal -->
         <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
+            <div class="modal-dialog modal-xl">
                 <div class="modal-content">
-                    <div class="modal-header">
+                    <div class="modal-header bg-dark text-white">
                         <h5 class="modal-title" id="customerModalLabel">
                             <i class="bi-person-circle me-2"></i>
-                            Información del Cliente
+                            Información del Cliente - Finalizar Compra
                         </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form id="customerForm">
-                        <div class="modal-body">
+                        <div class="modal-body bg-light">
                             <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="clienteId" class="form-label">Cédula *</label>
-                                    <input type="text" class="form-control" id="clienteId" name="clienteId" 
-                                           placeholder="Ej: 12345678" minlength="8" maxlength="15" required>
-                                    <div class="form-text">Mínimo 8 caracteres</div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="email" class="form-label">Email *</label>
-                                    <input type="email" class="form-control" id="email" name="email" required>
+                                <div class="col-12 mb-4">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-header bg-white">
+                                            <h6 class="mb-0 text-dark">
+                                                <i class="bi-person-lines-fill me-2"></i>
+                                                Datos Personales
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-4 mb-3">
+                                                    <label for="clienteId" class="form-label fw-bold">Cédula *</label>
+                                                    <input type="text" class="form-control" id="clienteId" name="clienteId" 
+                                                           placeholder="Ej: 12345678" minlength="8" maxlength="15" required>
+                                                    <div class="form-text">Mínimo 8 caracteres</div>
+                                                </div>
+                                                <div class="col-md-4 mb-3">
+                                                    <label for="nombre" class="form-label fw-bold">Nombre *</label>
+                                                    <input type="text" class="form-control" id="nombre" name="nombre" required>
+                                                </div>
+                                                <div class="col-md-4 mb-3">
+                                                    <label for="email" class="form-label fw-bold">Email *</label>
+                                                    <input type="email" class="form-control" id="email" name="email" required>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-4 mb-3">
+                                                    <label for="primerApellido" class="form-label fw-bold">Primer Apellido *</label>
+                                                    <input type="text" class="form-control" id="primerApellido" name="primerApellido" required>
+                                                </div>
+                                                <div class="col-md-4 mb-3">
+                                                    <label for="segundoApellido" class="form-label fw-bold">Segundo Apellido *</label>
+                                                    <input type="text" class="form-control" id="segundoApellido" name="segundoApellido" required>
+                                                </div>
+                                                <div class="col-md-4 mb-3">
+                                                    <label for="telefono" class="form-label fw-bold">Teléfono</label>
+                                                    <input type="tel" class="form-control" id="telefono" name="telefono">
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="fechaNacimiento" class="form-label fw-bold">Fecha de Nacimiento</label>
+                                                    <input type="date" class="form-control" id="fechaNacimiento" name="fechaNacimiento">
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="direccion" class="form-label fw-bold">Dirección</label>
+                                                    <textarea class="form-control" id="direccion" name="direccion" rows="2" placeholder="Dirección completa"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
+                            
+                            <!-- Resumen del Carrito -->
                             <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="nombre" class="form-label">Nombre *</label>
-                                    <input type="text" class="form-control" id="nombre" name="nombre" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="primerApellido" class="form-label">Primer Apellido *</label>
-                                    <input type="text" class="form-control" id="primerApellido" name="primerApellido" required>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="segundoApellido" class="form-label">Segundo Apellido *</label>
-                                    <input type="text" class="form-control" id="segundoApellido" name="segundoApellido" required>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <label for="telefono" class="form-label">Teléfono</label>
-                                    <input type="tel" class="form-control" id="telefono" name="telefono">
+                                <div class="col-12">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-header bg-white">
+                                            <h6 class="mb-0 text-dark">
+                                                <i class="bi-cart-check me-2"></i>
+                                                Resumen de tu Compra
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="cartSummaryCheckout" class="row">
+                                                <!-- El resumen se llenará dinámicamente -->
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
-                                    <input type="date" class="form-control" id="fechaNacimiento" name="fechaNacimiento">
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <!-- Espacio reservado para futuras extensiones -->
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label for="direccion" class="form-label">Dirección</label>
-                                <textarea class="form-control" id="direccion" name="direccion" rows="3"></textarea>
-                            </div>
-                            <div class="alert alert-info">
+                            
+                            <div class="alert alert-info border-0 shadow-sm mt-3">
                                 <i class="bi-info-circle me-2"></i>
-                                Los campos marcados con * son obligatorios.
+                                <strong>Información importante:</strong> Los campos marcados con * son obligatorios. 
+                                Después de completar esta información, serás redirigido a tu factura de compra.
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-primary" id="saveCustomerBtn">
+                        <div class="modal-footer bg-white border-top">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                <i class="bi-x-circle me-1"></i>
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-success btn-lg" id="saveCustomerBtn">
                                 <i class="bi-check-circle me-1"></i>
-                                Guardar y Proceder al Pago
+                                Finalizar Compra
                             </button>
                         </div>
                     </form>

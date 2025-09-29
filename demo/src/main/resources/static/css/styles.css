@@ -10857,61 +10857,253 @@ textarea.form-control-lg {
     }
 }
 
-/* Customer modal styles */
+/* Customer modal styles - Redesigned to match index theme */
 #customerModal .modal-content {
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    border: none;
 }
 
 #customerModal .modal-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #343a40 0%, #495057 100%);
     color: white;
-    border-radius: 15px 15px 0 0;
+    border-radius: 20px 20px 0 0;
+    padding: 1.5rem;
 }
 
 #customerModal .modal-header .btn-close {
     filter: invert(1);
+    opacity: 0.8;
+}
+
+#customerModal .modal-header .btn-close:hover {
+    opacity: 1;
+}
+
+#customerModal .modal-body {
+    background: #f8f9fa;
+    padding: 2rem;
+}
+
+#customerModal .card {
+    border-radius: 15px;
+    transition: transform 0.2s ease-in-out;
+}
+
+#customerModal .card:hover {
+    transform: translateY(-2px);
+}
+
+#customerModal .card-header {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-bottom: 2px solid #e9ecef;
+    border-radius: 15px 15px 0 0 !important;
+    padding: 1rem 1.5rem;
+}
+
+#customerModal .card-header h6 {
+    color: #495057;
+    font-weight: 600;
+}
+
+#customerModal .card-body {
+    padding: 1.5rem;
 }
 
 #customerModal .form-label {
     font-weight: 600;
     color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+#customerModal .form-control {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
 }
 
 #customerModal .form-control:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
+    transform: translateY(-1px);
 }
 
-#customerModal .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+#customerModal .btn-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
     border: none;
-    border-radius: 25px;
-    padding: 10px 30px;
+    border-radius: 15px;
+    padding: 12px 30px;
     font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
 }
 
-#customerModal .btn-primary:hover {
-    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+#customerModal .btn-success:hover {
+    background: linear-gradient(135deg, #218838 0%, #1ea085 100%);
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
 }
 
-#customerModal .btn-secondary {
-    border-radius: 25px;
-    padding: 10px 30px;
+#customerModal .btn-outline-secondary {
+    border-radius: 15px;
+    padding: 12px 30px;
     font-weight: 600;
+    border: 2px solid #6c757d;
+    transition: all 0.3s ease;
+}
+
+#customerModal .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    transform: translateY(-1px);
 }
 
 #customerModal .alert-info {
-    background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
     border: none;
-    border-radius: 10px;
-    color: #1565c0;
+    border-radius: 15px;
+    color: #0c5460;
+    border-left: 4px solid #17a2b8;
+}
+
+/* Cart summary in modal */
+#cartSummaryCheckout .cart-item {
+    border-bottom: 1px solid #e9ecef;
+    padding: 0.75rem 0;
+}
+
+#cartSummaryCheckout .cart-item:last-child {
+    border-bottom: none;
 }
 
 /* Loading state */
 #saveCustomerBtn:disabled {
     opacity: 0.7;
     cursor: not-allowed;
+    transform: none !important;
+}
+
+/* ==========================================
+   FACTURA STYLES
+========================================== */
+
+/* Gradiente principal para headers */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+/* Estilos para la factura */
+.invoice-info {
+    font-size: 0.9rem;
+}
+
+/* Tabla de la factura */
+.table-responsive .table th {
+    font-weight: 600;
+    color: #495057;
+    background-color: #f8f9fa;
+}
+
+.table-responsive .table td {
+    vertical-align: middle;
+    padding: 1rem 0.75rem;
+}
+
+/* Footer de la tabla con totales */
+.table tfoot tr:last-child {
+    border-top: 2px solid #28a745;
+}
+
+.table tfoot tr:last-child td {
+    background-color: #f8fff9;
+}
+
+/* Botones de acción de la factura */
+.btn-outline-primary:hover,
+.btn-outline-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+/* Animaciones para elementos de la factura */
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Estilos para impresión */
+@media print {
+    .navbar,
+    .btn,
+    footer,
+    .card-header {
+        display: none !important;
+    }
+    
+    .container {
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #dee2e6 !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .card-body {
+        padding: 1rem !important;
+    }
+    
+    .bg-gradient-primary {
+        background: #007bff !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+    }
+    
+    .table {
+        font-size: 0.9rem;
+    }
+    
+    .table th,
+    .table td {
+        border: 1px solid #dee2e6 !important;
+    }
+    
+    .table-light {
+        background-color: #f8f9fa !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+    }
+    
+    .text-success {
+        color: #28a745 !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+    }
+    
+    .badge {
+        border: 1px solid #6c757d !important;
+        -webkit-print-color-adjust: exact;
+        color-adjust: exact;
+    }
+    
+    body {
+        font-size: 12pt;
+        line-height: 1.4;
+    }
+    
+    h1, h2, h3, h4, h5, h6 {
+        page-break-after: avoid;
+    }
+    
+    .table {
+        page-break-inside: avoid;
+    }
 }

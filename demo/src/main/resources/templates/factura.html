@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura de Compra - Licoreria Online</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Custom CSS -->
+    <link href="/css/styles.css" rel="stylesheet">
+    <link href="/css/custom.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="bi-shop me-2"></i>
+                Licoreria Online
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="bi-house me-1"></i>Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="bi-shop me-1"></i>Tienda
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container my-5">
+        <!-- Header de la Factura -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-header bg-gradient-primary text-white">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h2 class="mb-0">
+                                    <i class="bi-receipt me-2"></i>
+                                    Factura de Compra
+                                </h2>
+                                <p class="mb-0 opacity-75">Gracias por tu compra</p>
+                            </div>
+                            <div class="col-md-6 text-md-end">
+                                <div class="invoice-info">
+                                    <p class="mb-1"><strong>Número de Factura:</strong> <span th:text="${encabezado.numeroFactura ?: 'Cargando...'}">#000001</span></p>
+                                    <p class="mb-1"><strong>Fecha:</strong> <span th:text="${encabezado.fecha ?: #dates.format(#dates.createNow(), 'dd/MM/yyyy')}">01/01/2024</span></p>
+                                    <p class="mb-0"><strong>Estado:</strong> <span class="badge bg-success" th:text="${encabezado.estado ?: 'Completada'}">Completada</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información del Cliente -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0 text-dark">
+                            <i class="bi-person-circle me-2"></i>
+                            Información del Cliente
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12 mb-2">
+                                <strong>Nombre:</strong> <span th:text="${encabezado.cliente.nombreCompleto ?: encabezado.cliente.nombre + ' ' + encabezado.cliente.primerApellido + ' ' + encabezado.cliente.segundoApellido}">-</span>
+                            </div>
+                            <div class="col-12 mb-2">
+                                <strong>Cédula:</strong> <span th:text="${encabezado.cliente.clienteId}">-</span>
+                            </div>
+                            <div class="col-12 mb-2">
+                                <strong>Email:</strong> <span th:text="${encabezado.cliente.email}">-</span>
+                            </div>
+                            <div class="col-12 mb-2">
+                                <strong>Teléfono:</strong> <span th:text="${encabezado.cliente.telefono ?: 'No registrado'}">-</span>
+                            </div>
+                            <div class="col-12">
+                                <strong>Dirección:</strong> <span th:text="${encabezado.cliente.direccion ?: 'No registrada'}">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Información de la Empresa -->
+            <div class="col-md-6">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0 text-dark">
+                            <i class="bi-building me-2"></i>
+                            Información de la Empresa
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12 mb-2">
+                                <strong th:text="${encabezado.empresa.nombre ?: 'Licoreria Online'}">Licoreria Online</strong>
+                            </div>
+                            <div class="col-12 mb-2">
+                                <small class="text-muted" th:text="${encabezado.empresa.descripcion ?: 'Tienda de Licores Premium'}">Tienda de Licores Premium</small>
+                            </div>
+                            <div class="col-12 mb-2">
+                                <strong>Dirección:</strong> <br>
+                                <small th:text="${encabezado.empresa.direccion ?: 'Calle Principal #123, Ciudad, País'}">Calle Principal #123, Ciudad, País</small>
+                            </div>
+                            <div class="col-12 mb-2">
+                                <strong>Teléfono:</strong> <br>
+                                <small th:text="${encabezado.empresa.telefono ?: '+1 (555) 123-4567'}">+1 (555) 123-4567</small>
+                            </div>
+                            <div class="col-12">
+                                <strong>Email:</strong> <br>
+                                <small th:text="${encabezado.empresa.email ?: 'info@licoreriaonline.com'}">info@licoreriaonline.com</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detalles de la Compra -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0 text-dark">
+                            <i class="bi-cart-check me-2"></i>
+                            Detalles de la Compra
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="border-0">Producto</th>
+                                        <th class="border-0 text-center">Cantidad</th>
+                                        <th class="border-0 text-center">Precio Unitario</th>
+                                        <th class="border-0 text-center">Descuento</th>
+                                        <th class="border-0 text-end">Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Iteración sobre los detalles de la factura -->
+                                    <tr th:each="detalle : ${detalles}" th:if="${detalles != null and !detalles.empty}">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img th:src="${detalle.producto.imagen ?: '/images/licores/default.jpg'}" 
+                                                     th:alt="${detalle.producto.nombre}" 
+                                                     class="rounded me-3" 
+                                                     style="width: 50px; height: 50px; object-fit: cover;">
+                                                <div>
+                                                    <h6 class="mb-1" th:text="${detalle.producto.nombre}">Producto</h6>
+                                                    <small class="text-muted" th:text="${detalle.producto.categoria}">Categoría</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge bg-secondary" th:text="${detalle.cantidad}">1</span>
+                                        </td>
+                                        <td class="text-center" th:text="'$' + ${#numbers.formatDecimal(detalle.precioUnitario, 1, 'COMMA', 2, 'POINT')}">$0</td>
+                                        <td class="text-center">
+                                            <span th:if="${detalle.descuento > 0}" th:text="'$' + ${#numbers.formatDecimal(detalle.descuento, 1, 'COMMA', 2, 'POINT')}">$0</span>
+                                            <span th:unless="${detalle.descuento > 0}">-</span>
+                                        </td>
+                                        <td class="text-end fw-bold" th:text="'$' + ${#numbers.formatDecimal(detalle.subtotal, 1, 'COMMA', 2, 'POINT')}">$0</td>
+                                    </tr>
+                                    <!-- Mensaje cuando no hay detalles -->
+                                    <tr th:if="${detalles == null or detalles.empty}">
+                                        <td colspan="5" class="text-center text-muted">
+                                            <i class="bi-exclamation-circle me-2"></i>
+                                            No hay productos en esta factura
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot class="table-light">
+                                    <tr>
+                                        <td colspan="4" class="border-0 text-end">
+                                            <strong>Subtotal:</strong>
+                                        </td>
+                                        <td class="border-0 text-end">
+                                            <strong th:text="'$' + ${#numbers.formatDecimal(encabezado.subtotal ?: 0, 1, 'COMMA', 2, 'POINT')}">$0</strong>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" class="border-0 text-end">
+                                            <strong>IVA (<span th:text="${encabezado.porcentajeIva ?: 19}">19</span>%):</strong>
+                                        </td>
+                                        <td class="border-0 text-end">
+                                            <strong th:text="'$' + ${#numbers.formatDecimal(encabezado.iva ?: 0, 1, 'COMMA', 2, 'POINT')}">$0</strong>
+                                        </td>
+                                    </tr>
+                                    <tr th:if="${encabezado.descuentoTotal > 0}">
+                                        <td colspan="4" class="border-0 text-end">
+                                            <strong>Descuento Total:</strong>
+                                        </td>
+                                        <td class="border-0 text-end">
+                                            <strong class="text-danger" th:text="'-$' + ${#numbers.formatDecimal(encabezado.descuentoTotal, 1, 'COMMA', 2, 'POINT')}">$0</strong>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-success">
+                                        <td colspan="4" class="border-0 text-end">
+                                            <h5 class="mb-0">Total:</h5>
+                                        </td>
+                                        <td class="border-0 text-end">
+                                            <h4 class="mb-0 text-success" th:text="'$' + ${#numbers.formatDecimal(encabezado.total ?: 0, 1, 'COMMA', 2, 'POINT')}">$0</h4>
+                                        </td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información Adicional -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-header bg-white">
+                        <h5 class="mb-0 text-dark">
+                            <i class="bi-info-circle me-2"></i>
+                            Información Adicional
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="text-dark mb-2">Método de Pago:</h6>
+                                <p class="text-muted mb-3">
+                                    <i class="bi-credit-card me-2"></i>
+                                    <span th:text="${encabezado.metodoPago ?: 'Pago contra entrega'}">Pago contra entrega</span>
+                                </p>
+                                
+                                <h6 class="text-dark mb-2">Tiempo de Entrega:</h6>
+                                <p class="text-muted mb-3">
+                                    <i class="bi-truck me-2"></i>
+                                    <span th:text="${encabezado.tiempoEntrega ?: '1-2 días hábiles'}">1-2 días hábiles</span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="text-dark mb-2">Política de Devolución:</h6>
+                                <p class="text-muted mb-3">
+                                    <i class="bi-arrow-clockwise me-2"></i>
+                                    <span th:text="${encabezado.politicaDevolucion ?: '30 días desde la compra'}">30 días desde la compra</span>
+                                </p>
+                                
+                                <h6 class="text-dark mb-2">Soporte:</h6>
+                                <p class="text-muted mb-0">
+                                    <i class="bi-headset me-2"></i>
+                                    <span th:text="${encabezado.empresa.emailSoporte ?: 'soporte@licoreriaonline.com'}">soporte@licoreriaonline.com</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Acciones -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="row">
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <button class="btn btn-outline-primary btn-lg w-100" onclick="window.print()">
+                                    <i class="bi-printer me-2"></i>
+                                    Imprimir Factura
+                                </button>
+                            </div>
+                            <div class="col-md-4 mb-3 mb-md-0">
+                                <button class="btn btn-outline-success btn-lg w-100" onclick="downloadInvoice()">
+                                    <i class="bi-download me-2"></i>
+                                    Descargar PDF
+                                </button>
+                            </div>
+                            <div class="col-md-4">
+                                <a href="/" class="btn btn-primary btn-lg w-100">
+                                    <i class="bi-house me-2"></i>
+                                    Volver al Inicio
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Licoreria Online</h5>
+                    <p class="mb-0">Tu tienda de confianza para los mejores licores</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-0">&copy; 2024 Licoreria Online. Todos los derechos reservados.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap core JS-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom Invoice Script -->
+    <script>
+        // Función para descargar factura (placeholder)
+        function downloadInvoice() {
+            alert('Función de descarga en desarrollo');
+        }
+        
+        // Función para imprimir factura
+        function printInvoice() {
+            window.print();
+        }
+        
+        // Inicializar tooltips de Bootstrap si existen
+        document.addEventListener('DOMContentLoaded', function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+
+    <!-- Print Styles -->
+    <style>
+        @media print {
+            .navbar, .btn, footer {
+                display: none !important;
+            }
+            .container {
+                max-width: none !important;
+            }
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #dee2e6 !important;
+            }
+        }
+    </style>
+</body>
+</html>
