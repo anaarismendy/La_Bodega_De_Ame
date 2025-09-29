@@ -429,6 +429,7 @@ async function saveCartWithClientId(clienteId) {
             body: JSON.stringify(carritoItems)
         });
         
+
         if (response.ok) {
             // Éxito: Carrito guardado en la base de datos
             showNotification('Carrito guardado exitosamente. Procediendo al pago...', 'success');

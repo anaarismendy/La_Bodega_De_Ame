@@ -28,18 +28,18 @@ let cartItemCount = 0;
 async function loadProducts() {
     try {
         const response = await fetch('/api/productos');
-        
+
         if (!response.ok) {
             throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
         }
-        
+
         const productosDB = await response.json();
-        
+
         if (productosDB.length === 0) {
             products = [];
             return products;
         }
-        
+
         // Mapeo de datos: Backend Entity -> Frontend Model
         products = productosDB.map(producto => ({
             id: producto.productoId,
@@ -54,7 +54,7 @@ async function loadProducts() {
             category: "Productos", // TODO: Mapear desde categoriaId cuando se implemente la tabla de categorías
             stock: parseInt(producto.stock) || 0
         }));
-        
+
         return products;
     } catch (error) {
         console.error('Error cargando productos desde la API:', error);
@@ -158,12 +158,12 @@ function createProductCard(product) {
  * @returns {string} HTML de las insignias
  */
 function generateProductBadges(product) {
-    const discountBadge = product.hasDiscount ? 
+    const discountBadge = product.hasDiscount ?
         '<div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>' : '';
-    
-    const stockBadge = product.stock === 0 ? 
+
+    const stockBadge = product.stock === 0 ?
         '<div class="badge bg-danger text-white position-absolute" style="top: 0.5rem; left: 0.5rem">Sin Stock</div>' : '';
-    
+
     return discountBadge + stockBadge;
 }
 
@@ -175,7 +175,7 @@ function generateProductBadges(product) {
  * @returns {string} HTML de la sección de rating
  */
 function generateRatingSection(rating) {
-    return rating ? 
+    return rating ?
         `<div class="d-flex justify-content-center small text-warning mb-2">
              ${generateStars(rating)}
          </div>` : '';
@@ -189,9 +189,9 @@ function generateRatingSection(rating) {
  * @returns {string} HTML de la sección de precios
  */
 function generatePriceSection(product) {
-    return product.hasDiscount ? 
+    return product.hasDiscount ?
         `<span class="text-muted text-decoration-line-through">$${(product.originalPrice || 0).toFixed(2)}</span>
-         $${(product.price || 0).toFixed(2)}` : 
+         $${(product.price || 0).toFixed(2)}` :
         `$${(product.price || 0).toFixed(2)}`;
 }
 
@@ -219,16 +219,53 @@ function generateCardClasses(product) {
  */
 function generateActionButton(product) {
     const isOutOfStock = product.stock === 0;
-    
+
     if (product.buttonText === "View options") {
         return `<a class="btn btn-outline-dark mt-auto" href="#" onclick="event.stopPropagation(); viewProduct(${product.id})">Ver detalle</a>`;
     }
-    
+
     if (isOutOfStock) {
         return `<a class="btn btn-outline-secondary mt-auto" href="#" onclick="event.stopPropagation(); viewProduct(${product.id})">Ver detalle</a>`;
     }
-    
-    return `<a class="btn btn-outline-dark mt-auto" href="#" onclick="event.stopPropagation(); addToCartFromMain(${product.id})">${product.buttonText}</a>`;
+
+    return generateCardButtons;
+
+}
+
+//TODO: REVISAR METODO DE ELIMINAR Y UPDATE, FUNCIONAMIENTO CORRECTO
+function generateCardButtons() {
+    //Crear Boton de añadir al carrito 
+    const btn = `<a class="btn btn-outline-dark mt-auto" href="#" onclick="event.stopPropagation(); addToCartFromMain(${product.id})">${product.buttonText}</a>`;
+
+    const btnEliminar = `<a class="btn btn-outline-danger mt-auto" href="#" onclick="event.stopPropagation(); RemoveProduct(${product.id})">Eliminar</a>`;
+    const btnEditar = `<a class="btn btn-outline-primary mt-auto" href="#" onclick="event.stopPropagation(); EditProduct(${product.id})">Editar</a>`;
+
+    //TODO: REVISAR RETURN, ES CORRECTO?
+    return btn + btnEliminar + btnEditar;
+}
+
+
+async function RemoveProduct(productId) {
+    //Validaciones 
+    const response = await fetch(`/api/productos/delete/${productId}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    const data = await response.json();
+    console.log(data);
+}
+
+async function EditProduct(productId, product) {
+    //Validaciones 
+    const response = await fetch(`/api/productos/update/${productId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(product)
+    });
 }
 
 /**
@@ -241,12 +278,12 @@ function generateActionButton(product) {
 function renderProducts() {
     const container = getProductsContainer();
     if (!container) return;
-    
+
     if (products.length === 0) {
         renderEmptyState(container);
         return;
     }
-    
+
     renderProductsList(container);
 }
 
@@ -295,7 +332,7 @@ function renderProductsList(container) {
     const productsHTML = products
         .map(product => createProductCard(product))
         .join('');
-    
+
     container.innerHTML = productsHTML;
 }
 
@@ -324,7 +361,7 @@ async function getProductById(productId) {
         if (!response.ok) {
             throw new Error(`Error HTTP: ${response.status}`);
         }
-        
+
         const productoDB = await response.json();
         return mapProductFromAPI(productoDB);
     } catch (error) {
@@ -366,9 +403,9 @@ function mapProductFromAPI(productoDB) {
 function renderProductDetail() {
     const productId = parseInt(getUrlParameter('id'));
     const container = getProductDetailContainer();
-    
+
     if (!container) return;
-    
+
     if (!productId) {
         renderProductNotFound(container);
         return;
@@ -380,7 +417,7 @@ function renderProductDetail() {
         renderProductDetailHTML(cachedProduct, container);
         return;
     }
-    
+
     // Strategy 2: Cargar desde API
     loadAndRenderProductFromAPI(productId, container);
 }
@@ -451,11 +488,11 @@ function renderProductNotFound(container) {
  */
 function renderProductDetailHTML(product, container) {
     updatePageTitle(product.name);
-    
+
     const detailSections = generateDetailSections(product);
     const stockInfo = generateStockInfo(product);
     const actionSection = generateDetailActionSection(product);
-    
+
     const productDetailHTML = createDetailHTML(product, detailSections, stockInfo, actionSection);
     container.innerHTML = productDetailHTML;
 }
@@ -495,7 +532,7 @@ function generateDetailSections(product) {
  * @returns {string} HTML de la insignia de descuento
  */
 function generateDetailDiscountBadge(hasDiscount) {
-    return hasDiscount ? 
+    return hasDiscount ?
         '<span class="badge bg-danger me-2">En Oferta</span>' : '';
 }
 
@@ -507,7 +544,7 @@ function generateDetailDiscountBadge(hasDiscount) {
  * @returns {string} HTML de la sección de rating
  */
 function generateDetailRatingSection(rating) {
-    return rating ? 
+    return rating ?
         `<div class="d-flex align-items-center mb-3">
             <div class="d-flex text-warning me-2">
                 ${generateStars(rating)}
@@ -525,7 +562,7 @@ function generateDetailRatingSection(rating) {
  */
 function generateDetailPriceSection(product) {
     if (product.hasDiscount) {
-        const discountPercentage = Math.round((1 - product.price/product.originalPrice) * 100);
+        const discountPercentage = Math.round((1 - product.price / product.originalPrice) * 100);
         return `
             <div class="mb-3">
                 <span class="text-muted text-decoration-line-through fs-5 me-2">$${(product.originalPrice || 0).toFixed(2)}</span>
@@ -533,7 +570,7 @@ function generateDetailPriceSection(product) {
                 <span class="badge bg-success ms-2">${discountPercentage}% OFF</span>
             </div>`;
     }
-    
+
     return `
         <div class="mb-3">
             <span class="fs-3 fw-bold">$${(product.price || 0).toFixed(2)}</span>
@@ -549,11 +586,11 @@ function generateDetailPriceSection(product) {
  */
 function generateDetailDetailsSection(details) {
     if (!details) return '';
-    
+
     const detailsList = Object.entries(details)
         .map(([key, value]) => `<li><strong>${key}:</strong> ${value}</li>`)
         .join('');
-    
+
     return `
         <div class="row mt-4">
             <div class="col-12">
@@ -574,11 +611,11 @@ function generateDetailDetailsSection(details) {
  */
 function generateStockInfo(product) {
     const isOutOfStock = product.stock === 0;
-    
+
     return {
         stockClass: isOutOfStock ? 'out-of-stock-detail' : '',
         imageClass: isOutOfStock ? 'card-img-top mb-5 mb-md-0 out-of-stock-img-detail' : 'card-img-top mb-5 mb-md-0',
-        stockSection: isOutOfStock ? 
+        stockSection: isOutOfStock ?
             `<div class="d-flex align-items-center mb-4">
                 <span class="me-3 text-danger"><strong>Stock:</strong> Sin stock disponible</span>
                 <span class="badge bg-danger">No disponible</span>
@@ -598,11 +635,11 @@ function generateStockInfo(product) {
  */
 function generateDetailActionSection(product) {
     const isOutOfStock = product.stock === 0;
-    
+
     if (isOutOfStock) {
         return generateOutOfStockActions(product.id);
     }
-    
+
     return generateInStockActions(product.id, product.stock);
 }
 
@@ -699,12 +736,12 @@ function createDetailHTML(product, detailSections, stockInfo, actionSection) {
 function addToCartFromDetail(productId) {
     const quantityInput = getQuantityInput();
     const quantity = validateQuantity(quantityInput);
-    
+
     if (!quantity) return;
-    
+
     const product = findProductInCache(productId);
     if (!validateStock(product, quantity, quantityInput)) return;
-    
+
     addToCart(productId, quantity);
     resetQuantityInput(quantityInput);
 }
@@ -728,12 +765,12 @@ function getQuantityInput() {
  */
 function validateQuantity(quantityInput) {
     const quantity = parseInt(quantityInput?.value) || 1;
-    
+
     if (quantity < 1) {
         alert('La cantidad debe ser mayor a 0');
         return null;
     }
-    
+
     return quantity;
 }
 
@@ -813,7 +850,7 @@ function updateCartCounter(quantity = 1) {
  * 
  * @returns {void}
  */
-document.addEventListener('DOMContentLoaded', async function() {
+document.addEventListener('DOMContentLoaded', async function () {
     await initializeApplication();
 });
 
@@ -851,7 +888,7 @@ function initializeCartSystem() {
  */
 function renderCurrentPage() {
     const isDetailPage = isProductDetailPage();
-    
+
     if (isDetailPage) {
         renderProductDetail();
     } else {
