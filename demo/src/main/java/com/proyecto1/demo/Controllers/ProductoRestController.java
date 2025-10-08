@@ -104,7 +104,6 @@ public class ProductoRestController {
      *         500 si hay error
      */
 
-     //TODO: REVISAR METODO DE ELIMINAR, FUNCIONAMIENTO CORRECTO
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteProducto(@PathVariable Long id) {
         try {
