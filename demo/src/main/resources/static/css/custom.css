@@ -27,6 +27,282 @@
     font-weight: 600;
 }
 
+/* ===== ESTILOS PARA MODAL DE EDICIÓN ===== */
+
+/* Modal de editar producto */
+#editProductModal .modal-content {
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+#editProductModal .modal-header {
+    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+    color: white;
+    border-radius: 20px 20px 0 0;
+    padding: 1.5rem;
+}
+
+#editProductModal .modal-header .btn-close {
+    filter: invert(1);
+    opacity: 0.8;
+}
+
+#editProductModal .modal-header .btn-close:hover {
+    opacity: 1;
+}
+
+#editProductModal .modal-body {
+    background: #f8f9fa;
+    padding: 2rem;
+}
+
+#editProductModal .card {
+    border-radius: 15px;
+    transition: transform 0.2s ease-in-out;
+}
+
+#editProductModal .card:hover {
+    transform: translateY(-2px);
+}
+
+#editProductModal .card-header {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-bottom: 2px solid #e9ecef;
+    border-radius: 15px 15px 0 0 !important;
+    padding: 1rem 1.5rem;
+}
+
+#editProductModal .card-header h6 {
+    color: #495057;
+    font-weight: 600;
+}
+
+#editProductModal .card-body {
+    padding: 1.5rem;
+}
+
+#editProductModal .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+#editProductModal .form-control,
+#editProductModal .form-select {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+#editProductModal .form-control:focus,
+#editProductModal .form-select:focus {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.15);
+    transform: translateY(-1px);
+}
+
+#editProductModal .input-group-text {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+    font-weight: 600;
+    color: #495057;
+}
+
+#editProductModal .btn-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+    border: none;
+    border-radius: 15px;
+    padding: 12px 30px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+#editProductModal .btn-warning:hover {
+    background: linear-gradient(135deg, #e0a800 0%, #d39e00 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
+}
+
+#editProductModal .btn-outline-secondary {
+    border-radius: 15px;
+    padding: 12px 30px;
+    font-weight: 600;
+    border: 2px solid #6c757d;
+    transition: all 0.3s ease;
+}
+
+#editProductModal .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    transform: translateY(-1px);
+}
+
+#editProductModal .alert-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border: none;
+    border-radius: 15px;
+    color: #856404;
+    border-left: 4px solid #ffc107;
+}
+
+/* Checkbox personalizado para modal de edición */
+#editProductModal .form-check-input {
+    border-radius: 6px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+#editProductModal .form-check-input:checked {
+    background-color: #ffc107;
+    border-color: #ffc107;
+}
+
+#editProductModal .form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+}
+
+/* Estilos para campos deshabilitados en modal de edición */
+#editProductModal .form-control:disabled,
+#editProductModal .form-select:disabled {
+    background-color: #f8f9fa;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#editProductModal .form-control:read-only {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+}
+
+/* Loading state para el botón de actualizar */
+#updateProductBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Responsive para el modal de edición */
+@media (max-width: 768px) {
+    #editProductModal .modal-dialog {
+        margin: 0.5rem;
+    }
+    
+    #editProductModal .modal-body {
+        padding: 1rem;
+    }
+    
+    #editProductModal .card-body {
+        padding: 1rem;
+    }
+}
+
+/* ===== ESTILOS PARA DESCUENTOS ===== */
+
+/* Animación de pulso para badges de descuento */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+    }
+}
+
+/* Estilos para la sección de precios con descuento */
+.price-section {
+    text-align: center;
+    margin: 0.5rem 0;
+}
+
+.original-price {
+    font-size: 0.85rem !important;
+    opacity: 0.7;
+    text-decoration: line-through !important;
+    color: #6c757d !important;
+    margin-bottom: 0.25rem;
+}
+
+.current-price {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.current-price .text-success {
+    font-weight: 700 !important;
+    font-size: 1.25rem !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.current-price .badge {
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.35em 0.65em;
+    border-radius: 0.5rem;
+    animation: pulse 2s infinite;
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+}
+
+/* Borde uniforme para TODAS las cards de productos */
+.card {
+    border: 1px solid #000000 !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Efecto especial adicional para productos en descuento */
+.card:has(.badge.bg-danger) {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+}
+
+/* Hover effect uniforme para TODAS las cards */
+.card:hover {
+    border: 1px solid #000000 !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
+    transform: translateY(-10px) scale(1.02);
+}
+
+/* Hover effect adicional para productos en descuento */
+.card:has(.badge.bg-danger):hover {
+    background: linear-gradient(135deg, #fff 0%, #f0f8ff 100%);
+}
+
+/* Efecto de brillo para productos en descuento */
+.card:has(.badge.bg-danger)::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.card:has(.badge.bg-danger):hover::before {
+    left: 100%;
+}
+
+/* Asegurar que el contenido esté por encima del efecto de brillo */
+.card:has(.badge.bg-danger) .card-body,
+.card:has(.badge.bg-danger) .card-footer,
+.card:has(.badge.bg-danger) .badge {
+    position: relative;
+    z-index: 2;
+}
+
 /* Animación suave para los botones */
 .btn:hover {
     transform: translateY(-1px);

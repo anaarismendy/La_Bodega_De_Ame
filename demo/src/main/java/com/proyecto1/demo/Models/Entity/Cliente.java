@@ -3,10 +3,13 @@ package com.proyecto1.demo.Models.Entity;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 /**
@@ -47,6 +50,10 @@ public class Cliente implements Serializable {
     
     @Column(name = "estado", length = 20)
     private String estado = "activo";
+
+    // Relación OneToMany con Factura_Encabezado
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY)
+    private List<Factura_Encabezado> facturas;
 
     // Constructores
     public Cliente() {}
@@ -145,6 +152,14 @@ public class Cliente implements Serializable {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+
+    public List<Factura_Encabezado> getFacturas() {
+        return facturas;
+    }
+
+    public void setFacturas(List<Factura_Encabezado> facturas) {
+        this.facturas = facturas;
     }
 
     @Override

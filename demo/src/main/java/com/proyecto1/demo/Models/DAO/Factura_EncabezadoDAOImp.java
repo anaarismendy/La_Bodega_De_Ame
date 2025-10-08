@@ -24,7 +24,17 @@ public class Factura_EncabezadoDAOImp implements Factura_EncabezadoDAO {
 
     @Override
     public Factura_Encabezado encontrarPorId(Long id) {
-        return entityManager.find(Factura_Encabezado.class, id);
+        TypedQuery<Factura_Encabezado> query = entityManager.createQuery(
+            "SELECT f FROM Factura_Encabezado f " +
+            "INNER JOIN FETCH f.cliente " +
+            "INNER JOIN FETCH f.facturasDetalles fd " +
+            "INNER JOIN FETCH fd.producto " +
+            "WHERE f.factura_id = :id", 
+            Factura_Encabezado.class);
+        query.setParameter("id", id);
+        
+        List<Factura_Encabezado> results = query.getResultList();
+        return results.isEmpty() ? null : results.get(0);
     }
 
     @Override

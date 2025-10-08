@@ -50,7 +50,7 @@ public class CarritoDAOImp implements CarritoDAO {
     @Override
     public List<Carrito> findByClienteId(String clienteId) {
         return entityManager.createQuery(
-            "SELECT c FROM Carrito c WHERE c.cliente.clienteId = :clienteId", 
+            "SELECT c FROM Carrito c JOIN FETCH c.producto WHERE c.cliente.clienteId = :clienteId", 
             Carrito.class
         ).setParameter("clienteId", clienteId).getResultList();
     }

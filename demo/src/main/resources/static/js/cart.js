@@ -326,6 +326,7 @@ async function saveCustomerAndCart() {
         
         // Obtener datos del formulario
         const formData = getCustomerFormData();
+        console.log('Datos del formulario:', formData);
         
         // Validar cédula
         if (!formData.clienteId || formData.clienteId.length < 8) {
@@ -341,20 +342,28 @@ async function saveCustomerAndCart() {
             },
             body: JSON.stringify(formData)
         });
+
+        console.log('Respuesta del cliente:', clienteResponse);
         
         if (!clienteResponse.ok) {
             if (clienteResponse.status === 400) {
                 showNotification('Error: La cédula ya existe o tiene un formato inválido', 'error');
                 return;
             }
-            throw new Error(`Error guardando cliente: ${clienteResponse.status}`);
         }
         
         const clienteGuardado = await clienteResponse.json();
         showNotification(`Cliente ${clienteGuardado.nombre} ${clienteGuardado.primerApellido} guardado exitosamente`, 'success');
         
         // Ahora guardar el carrito con el ID del cliente recién creado
+        console.log('Guardando carrito para cliente:', clienteGuardado.clienteId);
         await saveCartWithClientId(clienteGuardado.clienteId);
+        console.log('Carrito guardado exitosamente');
+
+        // Crear la factura después de que el carrito esté guardado
+        console.log('Creando factura para cliente:', clienteGuardado.clienteId);
+        await saveFactura(clienteGuardado);
+        console.log('Factura creada exitosamente');
         
         // Cerrar el modal
         const customerModal = bootstrap.Modal.getInstance(document.getElementById('customerModal'));
@@ -365,22 +374,67 @@ async function saveCustomerAndCart() {
         
         // Limpiar el carrito después de la compra exitosa
         cart = [];
-        updateCartDisplay();
-        updateCartBadge();
+        localStorage.removeItem('cart');
+        updateCartCounter();
+        renderCart();
         
-        // Redirigir a la página de factura
-        setTimeout(() => {
-            window.location.href = '/factura';
-        }, 1000);
+        // La redirección se maneja en saveFactura()
         
     } catch (error) {
         console.error('Error en el proceso de checkout:', error);
-        showNotification('Error al procesar la información. Inténtalo de nuevo.', 'error');
     } finally {
         // Restaurar el botón
         const saveBtn = document.getElementById('saveCustomerBtn');
         saveBtn.innerHTML = '<i class="bi-check-circle me-1"></i>Guardar y Proceder al Pago';
         saveBtn.disabled = false;
+    }
+}
+
+async function saveFactura(cliente) {
+    try {
+        console.log('Iniciando creación de factura para cliente:', cliente.clienteId);
+
+        //obtener los datos del carrito del cliente
+        const carritoResponse = await fetch(`/api/carrito/cliente/${cliente.clienteId}`);
+        if (!carritoResponse.ok) {
+            throw new Error('Error al obtener datos del carrito');
+        }
+        const carrito = await carritoResponse.json();
+
+        console.log('Datos obtenidos - Cliente:', cliente.nombre, 'Carrito items:', carrito.length);
+
+        //guardar la factura
+        const facturaResponse = await fetch(`/api/facturas`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                cliente: cliente,
+                carrito: carrito
+            })
+        });
+
+        if (facturaResponse.ok) {
+            const factura = await facturaResponse.json();
+            console.log('Factura creada exitosamente:', factura.numeroFactura);
+            
+            // Mostrar notificación de éxito
+            showNotification(`Factura ${factura.numeroFactura} creada exitosamente`, 'success');
+            
+            // Redirigir a la página de la factura después de un breve delay
+            setTimeout(() => {
+                window.location.href = `/factura/${factura.factura_id}`;
+            }, 1500);
+        } else {
+            const errorData = await facturaResponse.json().catch(() => null);
+            const errorMessage = errorData?.message || 'Error al crear la factura';
+            throw new Error(errorMessage);
+        }
+        
+    } catch (error) {
+        console.error('Error en saveFactura:', error);
+        showNotification('Error al procesar la factura: ' + error.message, 'error');
     }
 }
 
@@ -428,6 +482,8 @@ async function saveCartWithClientId(clienteId) {
             },
             body: JSON.stringify(carritoItems)
         });
+
+        console.log("Carrito guardado en la base de datos: ", carritoItems);
         
 
         if (response.ok) {

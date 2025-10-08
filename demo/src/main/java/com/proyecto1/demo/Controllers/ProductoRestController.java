@@ -60,7 +60,7 @@ public class ProductoRestController {
      * @param producto Producto a crear
      * @return ResponseEntity con el producto creado o error 500
      */
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Producto> createProducto(@RequestBody Producto producto) {
         try {
             productoDAO.save(producto);
@@ -79,7 +79,6 @@ public class ProductoRestController {
      *         si hay error
      */
 
-    //TODO: REVISAR METODO DE ACTUALIZAR, FUNCIONAMIENTO CORRECTO
     @PutMapping("/update/{id}")
     public ResponseEntity<Producto> updateProducto(@PathVariable Long id, @RequestBody Producto producto) {
         try {
@@ -95,6 +94,7 @@ public class ProductoRestController {
             return ResponseEntity.internalServerError().build();
         }
     }
+    
 
     /**
      * Elimina un producto de la base de datos

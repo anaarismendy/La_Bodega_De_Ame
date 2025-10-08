@@ -38,13 +38,12 @@
                             </ul>
                         </li>
                     </ul>
-                    <div class="d-flex">
-                        <button class="btn btn-outline-dark" type="button" onclick="">
-                            <i></i>
-                            ADD PRODUCT
+                   
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary" type="button" onclick="addNewProduct()" title="Añadir nuevo producto">
+                            <i class="bi-plus-circle me-1"></i>
+                            <span class="d-none d-md-inline">Añadir Producto</span>
                         </button>
-                    </div>
-                    <div class="d-flex">
                         <button class="btn btn-outline-dark" type="button" onclick="openCart()">
                             <i class="bi-cart-fill me-1"></i>
                             Cart
@@ -188,6 +187,324 @@
         <!-- Cart Overlay -->
         <div id="cartOverlay" class="cart-overlay" onclick="closeCart()"></div>
         
+    <!-- Edit Product Modal -->
+    <div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-white">
+                    <h5 class="modal-title" id="editProductModalLabel">
+                        <i class="bi-pencil-square me-2"></i>
+                        Editar Producto
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editProductForm">
+                    <div class="modal-body bg-light">
+                        <div class="row">
+                            <!-- Información Básica -->
+                            <div class="col-12 mb-4">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white">
+                                        <h6 class="mb-0 text-dark">
+                                            <i class="bi-info-circle me-2"></i>
+                                            Información Básica
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="editProductoNombre" class="form-label fw-bold">Nombre del Producto *</label>
+                                                <input type="text" class="form-control" id="editProductoNombre" name="nombre" 
+                                                       placeholder="Ej: Whisky Johnnie Walker Black Label" maxlength="255" required>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="editProductoCategoria" class="form-label fw-bold">Categoría *</label>
+                                                <select class="form-control" id="editProductoCategoria" name="categoria_id" required>
+                                                    <option value="">Selecciona una categoría</option>
+                                                    <!-- Las opciones se llenarán dinámicamente desde la BD -->
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 mb-3">
+                                                <label for="editProductoDescripcion" class="form-label fw-bold">Descripción</label>
+                                                <textarea class="form-control" id="editProductoDescripcion" name="descripcion" 
+                                                          rows="3" maxlength="255" placeholder="Descripción detallada del producto"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Precios y Descuentos -->
+                            <div class="col-12 mb-4">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white">
+                                        <h6 class="mb-0 text-dark">
+                                            <i class="bi-currency-dollar me-2"></i>
+                                            Precios y Descuentos
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-4 mb-3">
+                                                <label for="editProductoPrecio" class="form-label fw-bold">Precio *</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">$</span>
+                                                    <input type="number" class="form-control" id="editProductoPrecio" name="precio" 
+                                                           step="0.01" min="0" required placeholder="0.00">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label for="editProductoPrecioOriginal" class="form-label fw-bold">Precio Original</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">$</span>
+                                                    <input type="number" class="form-control" id="editProductoPrecioOriginal" name="precio_original" 
+                                                           step="0.01" min="0" placeholder="0.00">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label for="editProductoDescuento" class="form-label fw-bold">Descuento (%)</label>
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="editProductoDescuento" name="descuento" 
+                                                           step="0.01" min="0" max="100" placeholder="0">
+                                                    <span class="input-group-text">%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="editProductoHayDescuento" name="hay_descuento">
+                                                    <label class="form-check-label fw-bold" for="editProductoHayDescuento">
+                                                        Producto en descuento
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="editProductoStock" class="form-label fw-bold">Stock Disponible</label>
+                                                <input type="number" class="form-control" id="editProductoStock" name="stock" 
+                                                       min="0" placeholder="0" value="0">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Imagen y Rating -->
+                            <div class="col-12 mb-4">
+                                <div class="card border-0 shadow-sm">
+                                    <div class="card-header bg-white">
+                                        <h6 class="mb-0 text-dark">
+                                            <i class="bi-image me-2"></i>
+                                            Imagen y Calificación
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label for="editProductoImagen" class="form-label fw-bold">URL de la Imagen</label>
+                                                <input type="url" class="form-control" id="editProductoImagen" name="imagen" 
+                                                       placeholder="https://ejemplo.com/imagen.jpg" maxlength="255">
+                                                <div class="form-text">Ingresa la URL completa de la imagen del producto</div>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label for="editProductoRating" class="form-label fw-bold">Calificación</label>
+                                                <select class="form-control" id="editProductoRating" name="rating">
+                                                    <option value="">Sin calificación</option>
+                                                    <option value="1">⭐ (1 estrella)</option>
+                                                    <option value="2">⭐⭐ (2 estrellas)</option>
+                                                    <option value="3">⭐⭐⭐ (3 estrellas)</option>
+                                                    <option value="4">⭐⭐⭐⭐ (4 estrellas)</option>
+                                                    <option value="5">⭐⭐⭐⭐⭐ (5 estrellas)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="alert alert-warning border-0 shadow-sm mt-3">
+                            <i class="bi-exclamation-triangle me-2"></i>
+                            <strong>Información importante:</strong> Los campos marcados con * son obligatorios. 
+                            Los cambios se guardarán inmediatamente al enviar el formulario.
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-white border-top">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            <i class="bi-x-circle me-1"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-warning btn-lg" id="updateProductBtn">
+                            <i class="bi-check-circle me-1"></i>
+                            Actualizar Producto
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="addProductModalLabel">
+                            <i class="bi-plus-circle me-2"></i>
+                            Añadir Nuevo Producto
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="addProductForm">
+                        <div class="modal-body bg-light">
+                            <div class="row">
+                                <!-- Información Básica -->
+                                <div class="col-12 mb-4">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-header bg-white">
+                                            <h6 class="mb-0 text-dark">
+                                                <i class="bi-info-circle me-2"></i>
+                                                Información Básica
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="productoNombre" class="form-label fw-bold">Nombre del Producto *</label>
+                                                    <input type="text" class="form-control" id="productoNombre" name="nombre" 
+                                                           placeholder="Ej: Whisky Johnnie Walker Black Label" maxlength="255" required>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="productoCategoria" class="form-label fw-bold">Categoría *</label>
+                                                    <select class="form-control" id="productoCategoria" name="categoria_id" required>
+                                                        <option value="">Selecciona una categoría</option>
+                                                        <!-- Las opciones se llenarán dinámicamente desde la BD -->
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12 mb-3">
+                                                    <label for="productoDescripcion" class="form-label fw-bold">Descripción</label>
+                                                    <textarea class="form-control" id="productoDescripcion" name="descripcion" 
+                                                              rows="3" maxlength="255" placeholder="Descripción detallada del producto"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Precios y Descuentos -->
+                                <div class="col-12 mb-4">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-header bg-white">
+                                            <h6 class="mb-0 text-dark">
+                                                <i class="bi-currency-dollar me-2"></i>
+                                                Precios y Descuentos
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-4 mb-3">
+                                                    <label for="productoPrecio" class="form-label fw-bold">Precio *</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">$</span>
+                                                        <input type="number" class="form-control" id="productoPrecio" name="precio" 
+                                                               step="0.01" min="0" required placeholder="0.00">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 mb-3">
+                                                    <label for="productoPrecioOriginal" class="form-label fw-bold">Precio Original</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text">$</span>
+                                                        <input type="number" class="form-control" id="productoPrecioOriginal" name="precio_original" 
+                                                               step="0.01" min="0" placeholder="0.00">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 mb-3">
+                                                    <label for="productoDescuento" class="form-label fw-bold">Descuento (%)</label>
+                                                    <div class="input-group">
+                                                        <input type="number" class="form-control" id="productoDescuento" name="descuento" 
+                                                               step="0.01" min="0" max="100" placeholder="0">
+                                                        <span class="input-group-text">%</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="productoHayDescuento" name="hay_descuento">
+                                                        <label class="form-check-label fw-bold" for="productoHayDescuento">
+                                                            Producto en descuento
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="productoStock" class="form-label fw-bold">Stock Disponible</label>
+                                                    <input type="number" class="form-control" id="productoStock" name="stock" 
+                                                           min="0" placeholder="0" value="0">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Imagen y Rating -->
+                                <div class="col-12 mb-4">
+                                    <div class="card border-0 shadow-sm">
+                                        <div class="card-header bg-white">
+                                            <h6 class="mb-0 text-dark">
+                                                <i class="bi-image me-2"></i>
+                                                Imagen y Calificación
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="productoImagen" class="form-label fw-bold">URL de la Imagen</label>
+                                                    <input type="url" class="form-control" id="productoImagen" name="imagen" 
+                                                           placeholder="https://ejemplo.com/imagen.jpg" maxlength="255">
+                                                    <div class="form-text">Ingresa la URL completa de la imagen del producto</div>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label for="productoRating" class="form-label fw-bold">Calificación</label>
+                                                    <select class="form-control" id="productoRating" name="rating">
+                                                        <option value="">Sin calificación</option>
+                                                        <option value="1">⭐ (1 estrella)</option>
+                                                        <option value="2">⭐⭐ (2 estrellas)</option>
+                                                        <option value="3">⭐⭐⭐ (3 estrellas)</option>
+                                                        <option value="4">⭐⭐⭐⭐ (4 estrellas)</option>
+                                                        <option value="5">⭐⭐⭐⭐⭐ (5 estrellas)</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="alert alert-info border-0 shadow-sm mt-3">
+                                <i class="bi-info-circle me-2"></i>
+                                <strong>Información importante:</strong> Los campos marcados con * son obligatorios. 
+                                El sistema validará automáticamente los rangos de precios, descuentos y stock.
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-white border-top">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                <i class="bi-x-circle me-1"></i>
+                                Cancelar
+                            </button>
+                            <button type="submit" class="btn btn-primary btn-lg" id="saveProductBtn">
+                                <i class="bi-check-circle me-1"></i>
+                                Guardar Producto
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <!-- Customer Information Modal -->
         <div class="modal fade" id="customerModal" tabindex="-1" aria-labelledby="customerModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl">

@@ -1,6 +1,7 @@
 package com.proyecto1.demo.Models.Entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Entity
 @Table(name = "producto")
@@ -12,7 +13,8 @@ public class Producto {
     private Long productoId;
 
     @Column(name = "categoria_id")
-    private Integer categoriaId;
+    @JsonProperty("categoria_id")
+    private Long categoriaId;
 
     @Column(nullable = false, length = 255)
     private String nombre;
@@ -24,12 +26,14 @@ public class Producto {
     private Double precio;
 
     @Column(name = "precio_original")
+    @JsonProperty("precio_original")
     private Double precioOriginal;
 
     @Column(length = 255)
     private String imagen;
 
     @Column(name = "hay_descuento")
+    @JsonProperty("hay_descuento")
     private Boolean hayDescuento = false;
 
     private Double descuento;
@@ -47,11 +51,11 @@ public class Producto {
         this.productoId = productoId;
     }
 
-    public Integer getCategoriaId() {
+    public Long getCategoriaId() {
         return categoriaId;
     }
 
-    public void setCategoriaId(Integer categoriaId) {
+    public void setCategoriaId(Long categoriaId) {
         this.categoriaId = categoriaId;
     }
 

@@ -28,5 +28,7 @@ public class StaticResourceConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/data/**")
                 .addResourceLocations("classpath:/data/");
         
+        // IMPORTANTE: No configurar /factura/** como recurso estático
+        // para evitar conflictos con el controlador de facturas
     }
 }

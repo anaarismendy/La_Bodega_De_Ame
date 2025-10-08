@@ -59,7 +59,7 @@
                             <div class="col-md-6 text-md-end">
                                 <div class="invoice-info">
                                     <p class="mb-1"><strong>Número de Factura:</strong> <span th:text="${encabezado.numeroFactura ?: 'Cargando...'}">#000001</span></p>
-                                    <p class="mb-1"><strong>Fecha:</strong> <span th:text="${encabezado.fecha ?: #dates.format(#dates.createNow(), 'dd/MM/yyyy')}">01/01/2024</span></p>
+                                    <p class="mb-1"><strong>Fecha:</strong> <span th:text="${encabezado.fechaEmision ?: #dates.format(#dates.createNow(), 'dd/MM/yyyy')}">01/01/2024</span></p>
                                     <p class="mb-0"><strong>Estado:</strong> <span class="badge bg-success" th:text="${encabezado.estado ?: 'Completada'}">Completada</span></p>
                                 </div>
                             </div>
@@ -82,7 +82,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-12 mb-2">
-                                <strong>Nombre:</strong> <span th:text="${encabezado.cliente.nombreCompleto ?: encabezado.cliente.nombre + ' ' + encabezado.cliente.primerApellido + ' ' + encabezado.cliente.segundoApellido}">-</span>
+                                <strong>Nombre:</strong> <span th:text="${encabezado.cliente.nombre + ' ' + encabezado.cliente.primerApellido + ' ' + encabezado.cliente.segundoApellido}">-</span>
                             </div>
                             <div class="col-12 mb-2">
                                 <strong>Cédula:</strong> <span th:text="${encabezado.cliente.clienteId}">-</span>
@@ -113,22 +113,22 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-12 mb-2">
-                                <strong th:text="${encabezado.empresa.nombre ?: 'Licoreria Online'}">Licoreria Online</strong>
+                                <strong>Licoreria Online</strong>
                             </div>
                             <div class="col-12 mb-2">
-                                <small class="text-muted" th:text="${encabezado.empresa.descripcion ?: 'Tienda de Licores Premium'}">Tienda de Licores Premium</small>
+                                <small class="text-muted">Tienda de Licores Premium</small>
                             </div>
                             <div class="col-12 mb-2">
                                 <strong>Dirección:</strong> <br>
-                                <small th:text="${encabezado.empresa.direccion ?: 'Calle Principal #123, Ciudad, País'}">Calle Principal #123, Ciudad, País</small>
+                                <small>Calle Principal #123, Ciudad, País</small>
                             </div>
                             <div class="col-12 mb-2">
                                 <strong>Teléfono:</strong> <br>
-                                <small th:text="${encabezado.empresa.telefono ?: '+1 (555) 123-4567'}">+1 (555) 123-4567</small>
+                                <small>+1 (555) 123-4567</small>
                             </div>
                             <div class="col-12">
                                 <strong>Email:</strong> <br>
-                                <small th:text="${encabezado.empresa.email ?: 'info@licoreriaonline.com'}">info@licoreriaonline.com</small>
+                                <small>info@licoreriaonline.com</small>
                             </div>
                         </div>
                     </div>
@@ -169,7 +169,7 @@
                                                      style="width: 50px; height: 50px; object-fit: cover;">
                                                 <div>
                                                     <h6 class="mb-1" th:text="${detalle.producto.nombre}">Producto</h6>
-                                                    <small class="text-muted" th:text="${detalle.producto.categoria}">Categoría</small>
+                                                    <small class="text-muted" th:text="${detalle.producto.descripcion ?: 'Producto'}">Categoría</small>
                                                 </div>
                                             </div>
                                         </td>
@@ -202,18 +202,18 @@
                                     </tr>
                                     <tr>
                                         <td colspan="4" class="border-0 text-end">
-                                            <strong>IVA (<span th:text="${encabezado.porcentajeIva ?: 19}">19</span>%):</strong>
+                                            <strong>IVA (19%):</strong>
                                         </td>
                                         <td class="border-0 text-end">
-                                            <strong th:text="'$' + ${#numbers.formatDecimal(encabezado.iva ?: 0, 1, 'COMMA', 2, 'POINT')}">$0</strong>
+                                            <strong th:text="'$' + ${#numbers.formatDecimal(encabezado.impuesto ?: 0, 1, 'COMMA', 2, 'POINT')}">$0</strong>
                                         </td>
                                     </tr>
-                                    <tr th:if="${encabezado.descuentoTotal > 0}">
+                                    <tr th:if="${encabezado.descuento > 0}">
                                         <td colspan="4" class="border-0 text-end">
                                             <strong>Descuento Total:</strong>
                                         </td>
                                         <td class="border-0 text-end">
-                                            <strong class="text-danger" th:text="'-$' + ${#numbers.formatDecimal(encabezado.descuentoTotal, 1, 'COMMA', 2, 'POINT')}">$0</strong>
+                                            <strong class="text-danger" th:text="'-$' + ${#numbers.formatDecimal(encabezado.descuento, 1, 'COMMA', 2, 'POINT')}">$0</strong>
                                         </td>
                                     </tr>
                                     <tr class="table-success">
@@ -254,20 +254,20 @@
                                 <h6 class="text-dark mb-2">Tiempo de Entrega:</h6>
                                 <p class="text-muted mb-3">
                                     <i class="bi-truck me-2"></i>
-                                    <span th:text="${encabezado.tiempoEntrega ?: '1-2 días hábiles'}">1-2 días hábiles</span>
+                                    <span>1-2 días hábiles</span>
                                 </p>
                             </div>
                             <div class="col-md-6">
                                 <h6 class="text-dark mb-2">Política de Devolución:</h6>
                                 <p class="text-muted mb-3">
                                     <i class="bi-arrow-clockwise me-2"></i>
-                                    <span th:text="${encabezado.politicaDevolucion ?: '30 días desde la compra'}">30 días desde la compra</span>
+                                    <span>30 días desde la compra</span>
                                 </p>
                                 
                                 <h6 class="text-dark mb-2">Soporte:</h6>
                                 <p class="text-muted mb-0">
                                     <i class="bi-headset me-2"></i>
-                                    <span th:text="${encabezado.empresa.emailSoporte ?: 'soporte@licoreriaonline.com'}">soporte@licoreriaonline.com</span>
+                                    <span>soporte@licoreriaonline.com</span>
                                 </p>
                             </div>
                         </div>

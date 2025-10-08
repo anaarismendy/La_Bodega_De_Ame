@@ -11037,6 +11037,242 @@ textarea.form-control-lg {
 }
 
 /* ==========================================
+   NAVBAR BUTTONS STYLES
+========================================== */
+
+/* Botón de añadir producto en el navbar */
+.navbar .btn-outline-primary {
+    border-color: #007bff;
+    color: #007bff;
+    background-color: rgba(0, 123, 255, 0.05);
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border-width: 2px;
+}
+
+.navbar .btn-outline-primary:hover {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.navbar .btn-outline-primary:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Icono del botón de añadir producto */
+.navbar .btn-outline-primary i {
+    font-size: 1.1rem;
+}
+
+/* Responsive: Ocultar texto en pantallas pequeñas */
+@media (max-width: 767.98px) {
+    .navbar .btn-outline-primary .d-none.d-md-inline {
+        display: none !important;
+    }
+    
+    .navbar .btn-outline-primary {
+        padding: 0.375rem 0.75rem;
+        min-width: auto;
+    }
+}
+
+/* Gap entre botones del navbar */
+.navbar .d-flex.gap-2 {
+    gap: 0.5rem !important;
+}
+
+/* ==========================================
+   ADD PRODUCT MODAL STYLES
+========================================== */
+
+/* Modal de añadir producto */
+#addProductModal .modal-content {
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    border: none;
+}
+
+#addProductModal .modal-header {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    border-radius: 20px 20px 0 0;
+    padding: 1.5rem;
+}
+
+#addProductModal .modal-header .btn-close {
+    filter: invert(1);
+    opacity: 0.8;
+}
+
+#addProductModal .modal-header .btn-close:hover {
+    opacity: 1;
+}
+
+#addProductModal .modal-body {
+    background: #f8f9fa;
+    padding: 2rem;
+}
+
+#addProductModal .card {
+    border-radius: 15px;
+    transition: transform 0.2s ease-in-out;
+}
+
+#addProductModal .card:hover {
+    transform: translateY(-2px);
+}
+
+#addProductModal .card-header {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-bottom: 2px solid #e9ecef;
+    border-radius: 15px 15px 0 0 !important;
+    padding: 1rem 1.5rem;
+}
+
+#addProductModal .card-header h6 {
+    color: #495057;
+    font-weight: 600;
+}
+
+#addProductModal .card-body {
+    padding: 1.5rem;
+}
+
+#addProductModal .form-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+#addProductModal .form-control,
+#addProductModal .form-select {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+}
+
+#addProductModal .form-control:focus,
+#addProductModal .form-select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
+    transform: translateY(-1px);
+}
+
+#addProductModal .input-group-text {
+    background-color: #f8f9fa;
+    border-color: #e9ecef;
+    font-weight: 600;
+    color: #495057;
+}
+
+#addProductModal .btn-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    border: none;
+    border-radius: 15px;
+    padding: 12px 30px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+}
+
+#addProductModal .btn-primary:hover {
+    background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+}
+
+#addProductModal .btn-outline-secondary {
+    border-radius: 15px;
+    padding: 12px 30px;
+    font-weight: 600;
+    border: 2px solid #6c757d;
+    transition: all 0.3s ease;
+}
+
+#addProductModal .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    transform: translateY(-1px);
+}
+
+#addProductModal .alert-info {
+    background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+    border: none;
+    border-radius: 15px;
+    color: #0c5460;
+    border-left: 4px solid #17a2b8;
+}
+
+/* Checkbox personalizado */
+#addProductModal .form-check-input {
+    border-radius: 6px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+#addProductModal .form-check-input:checked {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
+#addProductModal .form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Estilos simplificados para el campo de imagen */
+#addProductModal .form-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+
+/* Estilos para campos deshabilitados */
+#addProductModal .form-control:disabled,
+#addProductModal .form-select:disabled {
+    background-color: #f8f9fa;
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+#addProductModal .form-control:read-only {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+}
+
+/* Transiciones suaves para cambios de estado */
+#addProductModal .form-control,
+#addProductModal .form-select {
+    transition: all 0.3s ease;
+}
+
+/* Loading state para el botón de guardar */
+#saveProductBtn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Responsive para el modal */
+@media (max-width: 768px) {
+    #addProductModal .modal-dialog {
+        margin: 0.5rem;
+    }
+    
+    #addProductModal .modal-body {
+        padding: 1rem;
+    }
+    
+    #addProductModal .card-body {
+        padding: 1rem;
+    }
+}
+
+/* ==========================================
    PRODUCT CARD BUTTONS STYLES
 ========================================== */
 
