@@ -177,13 +177,13 @@ function generateProductBadges(product) {
 
     if (product.hasDiscount && product.originalPrice && product.originalPrice > product.price) {
         const discountPercentage = Math.round((1 - product.price / product.originalPrice) * 100);
-        discountBadge = `<div class="badge bg-danger text-white position-absolute" style="top: 0.5rem; right: 0.5rem; font-size: 0.8rem; animation: pulse 2s infinite;">
+        discountBadge = `<div class="badge text-white position-absolute" style="background-color: #ff6b35; top: 0.5rem; right: 0.5rem; font-size: 0.8rem; animation: pulse 2s infinite;">
                             <i class="bi-percent"></i> -${discountPercentage}%
                         </div>`;
     }
 
     const stockBadge = product.stock === 0 ?
-        '<div class="badge bg-danger text-white position-absolute" style="top: 0.5rem; left: 0.5rem">Sin Stock</div>' : '';
+        '<div class="badge bg-secondary text-white position-absolute" style="top: 0.5rem; left: 0.5rem">Sin Stock</div>' : '';
 
     return discountBadge + stockBadge;
 }
@@ -218,8 +218,8 @@ function generatePriceSection(product) {
                     $${(product.originalPrice || 0).toFixed(2)}
                     </div>
                 <div class="current-price">
-                    <span class="text-success fw-bold fs-5">$${(product.price || 0).toFixed(2)}</span>
-                    <span class="badge bg-danger ms-2">-${discountPercentage}%</span>
+                    <span class="fw-bold fs-5" style="color: #ff6b35;">$${(product.price || 0).toFixed(2)}</span>
+                    <span class="badge ms-2" style="background-color: #ff6b35;">-${discountPercentage}%</span>
                 </div>
             </div>
         `;
@@ -286,11 +286,11 @@ function generateCardButtons(product) {
             <div class="d-grid gap-2">
                 <!-- Botones de administración para productos sin stock -->
                 <div class="btn-group" role="group">
-                    <a class="btn btn-outline-primary btn-sm" href="#" onclick="event.stopPropagation(); EditProduct(${product.id})" 
+                    <a class="btn btn-outline-dark btn-sm" href="#" onclick="event.stopPropagation(); EditProduct(${product.id})" 
                        title="Editar producto">
                         <i class="bi-pencil"></i>
                     </a>
-                    <a class="btn btn-outline-danger btn-sm" href="#" onclick="event.stopPropagation(); RemoveProduct(${product.id})" 
+                    <a class="btn btn-outline-secondary btn-sm" href="#" onclick="event.stopPropagation(); RemoveProduct(${product.id})" 
                        title="Eliminar producto">
                         <i class="bi-trash"></i>
                     </a>
@@ -307,18 +307,38 @@ function generateCardButtons(product) {
     // Para productos con stock, mostrar todos los botones incluyendo el principal
     return `
         <div class="d-grid gap-2">
+            <!-- Control de cantidad compacto -->
+            <div class="quantity-control-card" onclick="event.stopPropagation();">
+                <label class="quantity-label-card">Cantidad:</label>
+                <div class="input-group input-group-sm">
+                    <button class="btn btn-outline-secondary" type="button" onclick="event.stopPropagation(); updateCardQuantity(${product.id}, -1)">
+                        <i class="bi-dash"></i>
+                    </button>
+                    <input type="number" class="form-control text-center quantity-input-card" 
+                           id="quantity-${product.id}" 
+                           value="1" 
+                           min="1" 
+                           max="${product.stock}" 
+                           onclick="event.stopPropagation();"
+                           onchange="validateCardQuantity(${product.id})">
+                    <button class="btn btn-outline-secondary" type="button" onclick="event.stopPropagation(); updateCardQuantity(${product.id}, 1)">
+                        <i class="bi-plus"></i>
+                    </button>
+                </div>
+            </div>
+            
             <!-- Botón principal: Agregar al carrito (solo para productos con stock) -->
-            <a class="btn btn-success btn-sm" href="#" onclick="event.stopPropagation(); addToCartFromMain(${product.id})">
+            <a class="btn btn-sm" style="background-color: #ff6b35; border-color: #ff6b35; color: white;" href="#" onclick="event.stopPropagation(); addToCartFromMain(${product.id})">
                 <i class="bi-cart-plus me-1"></i>Agregar al carrito
             </a>
             
             <!-- Botones de administración -->
             <div class="btn-group" role="group">
-                <a class="btn btn-outline-primary btn-sm" href="#" onclick="event.stopPropagation(); EditProduct(${product.id})" 
+                <a class="btn btn-outline-dark btn-sm" href="#" onclick="event.stopPropagation(); EditProduct(${product.id})" 
                    title="Editar producto">
                     <i class="bi-pencil"></i>
                 </a>
-                <a class="btn btn-outline-danger btn-sm" href="#" onclick="event.stopPropagation(); RemoveProduct(${product.id})" 
+                <a class="btn btn-outline-secondary btn-sm" href="#" onclick="event.stopPropagation(); RemoveProduct(${product.id})" 
                    title="Eliminar producto">
                     <i class="bi-trash"></i>
                 </a>
@@ -1407,10 +1427,21 @@ function renderProductDetail() {
      */
     function generateInStockActions(productId, stock) {
         return `
+        <div class="d-flex align-items-center mb-3">
+            <label class="me-2 fw-bold">Cantidad:</label>
+            <div class="input-group" style="max-width: 180px;">
+                <button class="btn btn-outline-secondary" type="button" onclick="updateQuantityFromDetail(-1)">
+                    <i class="bi-dash"></i>
+                </button>
+                <input class="form-control text-center" id="inputQuantity" type="number" value="1" min="1" max="${stock || 1}" style="max-width: 5rem" />
+                <button class="btn btn-outline-secondary" type="button" onclick="updateQuantityFromDetail(1)">
+                    <i class="bi-plus"></i>
+                </button>
+            </div>
+        </div>
         <div class="d-flex">
-            <input class="form-control text-center me-3" id="inputQuantity" type="number" value="1" min="1" max="${stock || 1}" style="max-width: 5rem" />
-            <button class="btn btn-outline-dark flex-shrink-0" type="button" onclick="addToCartFromDetail(${productId})">
-                <i class="bi-cart-fill me-1"></i>
+            <button class="btn btn-success flex-shrink-0 btn-lg" type="button" onclick="addToCartFromDetail(${productId})">
+                <i class="bi-cart-fill me-2"></i>
                 Agregar al carrito
             </button>
         </div>`;
@@ -1555,7 +1586,66 @@ function contactForProduct(productId) {
      * @returns {void}
      */
 function addToCartFromMain(productId) {
-    addToCart(productId, 1);
+    // Obtener la cantidad del input específico de esta card
+    const quantityInput = document.getElementById(`quantity-${productId}`);
+    const quantity = quantityInput ? parseInt(quantityInput.value) || 1 : 1;
+    
+    // Agregar al carrito con la cantidad especificada
+    addToCart(productId, quantity);
+    
+    // Resetear la cantidad a 1 después de agregar
+    if (quantityInput) {
+        quantityInput.value = 1;
+    }
+}
+
+/**
+ * Actualiza la cantidad en el control de una card específica
+ * Implementa Single Responsibility: Solo maneja el incremento/decremento en cards
+ * 
+ * @param {number} productId - ID del producto
+ * @param {number} change - Valor a sumar o restar (+1 o -1)
+ */
+function updateCardQuantity(productId, change) {
+    const quantityInput = document.getElementById(`quantity-${productId}`);
+    if (!quantityInput) return;
+    
+    const currentValue = parseInt(quantityInput.value) || 1;
+    const minValue = parseInt(quantityInput.min) || 1;
+    const maxValue = parseInt(quantityInput.max) || 999;
+    const newValue = currentValue + change;
+    
+    // Validar que esté dentro de los límites
+    if (newValue >= minValue && newValue <= maxValue) {
+        quantityInput.value = newValue;
+    } else if (newValue < minValue) {
+        quantityInput.value = minValue;
+    } else if (newValue > maxValue) {
+        quantityInput.value = maxValue;
+        showNotification(`Solo hay ${maxValue} unidades disponibles`, 'warning');
+    }
+}
+
+/**
+ * Valida la cantidad ingresada manualmente en una card
+ * Implementa Single Responsibility: Solo maneja la validación de cantidad en cards
+ * 
+ * @param {number} productId - ID del producto
+ */
+function validateCardQuantity(productId) {
+    const quantityInput = document.getElementById(`quantity-${productId}`);
+    if (!quantityInput) return;
+    
+    const value = parseInt(quantityInput.value);
+    const min = parseInt(quantityInput.min) || 1;
+    const max = parseInt(quantityInput.max) || 999;
+    
+    if (isNaN(value) || value < min) {
+        quantityInput.value = min;
+    } else if (value > max) {
+        quantityInput.value = max;
+        showNotification(`Solo hay ${max} unidades disponibles`, 'warning');
+    }
 }
 
     /**

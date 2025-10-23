@@ -47,7 +47,7 @@
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card border-0 shadow-lg">
-                    <div class="card-header bg-gradient-primary text-white">
+                    <div class="card-header text-white" style="background: linear-gradient(135deg, #ff6b35 0%, #e55a2b 100%);">
                         <div class="row align-items-center">
                             <div class="col-md-6">
                                 <h2 class="mb-0">
@@ -60,7 +60,7 @@
                                 <div class="invoice-info">
                                     <p class="mb-1"><strong>Número de Factura:</strong> <span th:text="${encabezado.numeroFactura ?: 'Cargando...'}">#000001</span></p>
                                     <p class="mb-1"><strong>Fecha:</strong> <span th:text="${encabezado.fechaEmision ?: #dates.format(#dates.createNow(), 'dd/MM/yyyy')}">01/01/2024</span></p>
-                                    <p class="mb-0"><strong>Estado:</strong> <span class="badge bg-success" th:text="${encabezado.estado ?: 'Completada'}">Completada</span></p>
+                                    <p class="mb-0"><strong>Estado:</strong> <span class="badge" style="background-color: #28a745;" th:text="${encabezado.estado ?: 'PAGADA'}">PAGADA</span></p>
                                 </div>
                             </div>
                         </div>
@@ -216,12 +216,12 @@
                                             <strong class="text-danger" th:text="'-$' + ${#numbers.formatDecimal(encabezado.descuento, 1, 'COMMA', 2, 'POINT')}">$0</strong>
                                         </td>
                                     </tr>
-                                    <tr class="table-success">
+                                    <tr style="background-color: #fff5f0;">
                                         <td colspan="4" class="border-0 text-end">
                                             <h5 class="mb-0">Total:</h5>
                                         </td>
                                         <td class="border-0 text-end">
-                                            <h4 class="mb-0 text-success" th:text="'$' + ${#numbers.formatDecimal(encabezado.total ?: 0, 1, 'COMMA', 2, 'POINT')}">$0</h4>
+                                            <h4 class="mb-0" style="color: #ff6b35;" th:text="'$' + ${#numbers.formatDecimal(encabezado.total ?: 0, 1, 'COMMA', 2, 'POINT')}">$0</h4>
                                         </td>
                                     </tr>
                                 </tfoot>
@@ -283,19 +283,19 @@
                     <div class="card-body text-center">
                         <div class="row">
                             <div class="col-md-4 mb-3 mb-md-0">
-                                <button class="btn btn-outline-primary btn-lg w-100" onclick="window.print()">
+                                <button class="btn btn-outline-dark btn-lg w-100" onclick="window.print()">
                                     <i class="bi-printer me-2"></i>
                                     Imprimir Factura
                                 </button>
                             </div>
                             <div class="col-md-4 mb-3 mb-md-0">
-                                <button class="btn btn-outline-success btn-lg w-100" onclick="downloadInvoice()">
+                                <button class="btn btn-outline-secondary btn-lg w-100" onclick="downloadInvoice()">
                                     <i class="bi-download me-2"></i>
                                     Descargar PDF
                                 </button>
                             </div>
                             <div class="col-md-4">
-                                <a href="/" class="btn btn-primary btn-lg w-100">
+                                <a href="/" class="btn btn-lg w-100" style="background-color: #ff6b35; border-color: #ff6b35; color: white;">
                                     <i class="bi-house me-2"></i>
                                     Volver al Inicio
                                 </a>

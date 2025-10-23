@@ -40,7 +40,7 @@
                     </ul>
                    
                     <div class="d-flex gap-2">
-                        <button class="btn btn-outline-primary" type="button" onclick="addNewProduct()" title="Añadir nuevo producto">
+                        <button class="btn btn-dark" type="button" onclick="addNewProduct()" title="Añadir nuevo producto">
                             <i class="bi-plus-circle me-1"></i>
                             <span class="d-none d-md-inline">Añadir Producto</span>
                         </button>
@@ -175,7 +175,7 @@
                             <i class="bi-trash me-2"></i>
                             Vaciar Carrito
                         </button>
-                        <button class="btn btn-success w-100" onclick="proceedToCheckout()">
+                        <button class="btn w-100" style="background-color: #ff6b35; border-color: #ff6b35; color: white;" onclick="proceedToCheckout()">
                             <i class="bi-credit-card me-2"></i>
                             Proceder al Pago
                         </button>
@@ -350,7 +350,7 @@
     <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-xl">
                 <div class="modal-content">
-                    <div class="modal-header bg-primary text-white">
+                    <div class="modal-header bg-dark text-white">
                         <h5 class="modal-title" id="addProductModalLabel">
                             <i class="bi-plus-circle me-2"></i>
                             Añadir Nuevo Producto
@@ -495,7 +495,7 @@
                                 <i class="bi-x-circle me-1"></i>
                                 Cancelar
                             </button>
-                            <button type="submit" class="btn btn-primary btn-lg" id="saveProductBtn">
+                            <button type="submit" class="btn btn-dark btn-lg" id="saveProductBtn">
                                 <i class="bi-check-circle me-1"></i>
                                 Guardar Producto
                             </button>
@@ -603,7 +603,7 @@
                                 <i class="bi-x-circle me-1"></i>
                                 Cancelar
                             </button>
-                            <button type="submit" class="btn btn-success btn-lg" id="saveCustomerBtn">
+                            <button type="submit" class="btn btn-lg" style="background-color: #ff6b35; border-color: #ff6b35; color: white;" id="saveCustomerBtn">
                                 <i class="bi-check-circle me-1"></i>
                                 Finalizar Compra
                             </button>
